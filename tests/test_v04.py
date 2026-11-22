@@ -98,7 +98,6 @@ def test_epoch_changes_only_on_vector_content_mutation(tmp_path):
 
 
 def install_fake_usearch(monkeypatch):
-    import numpy as np
     class FakeMatch:
         def __init__(self,key,distance):
             self.key, self.distance = key, distance
