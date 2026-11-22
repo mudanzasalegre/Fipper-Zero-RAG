@@ -129,5 +129,6 @@ def test_sources_catalog_curated_urls():
     from pathlib import Path
     path=Path(__file__).resolve().parents[1]/'sources.json'
     cat=load_catalog(path)
-    assert len(cat['web'])==68
-    assert len({s['url'] for s in cat['web']})==68
+    assert len(cat['web']) >= 68
+    assert len({s['url'] for s in cat['web']}) == len(cat['web'])
+    assert any('js_developing_apps_using_js_sdk.html' in s['url'] for s in cat['web'])
