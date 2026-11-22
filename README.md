@@ -4,6 +4,8 @@
 
 [Manual oficial](https://docs.flipper.net/zero) · [Documentación de desarrollo](https://developer.flipper.net/flipperzero/doxygen/) · [Firmware](https://github.com/flipperdevices/flipperzero-firmware) · [Apps Catalog](https://github.com/flipperdevices/flipper-application-catalog)
 
+**Novedad v0.7 — Firmware Knowledge Graph:** índice por commit Git de funciones, declaraciones, macros, dependencias y llamadas C; catálogo explícito de API exportada a FAP mediante `targets/f7/api_symbols.csv`; comparador de código y API entre releases. [Explorar documentación v0.7](docs/FIRMWARE_GRAPH_V07.md).
+
 > Proyecto independiente, no afiliado a Flipper Devices. No instala nada en el dispositivo ni lo controla: el RAG se ejecuta en tu PC/Mac/servidor. Uso en dispositivos y sistemas propios o autorizados.
 
 ## Qué incluye
@@ -304,3 +306,23 @@ uvicorn flipper_rag.api:app --port 8000  # http://127.0.0.1:8000/ontology
 ```
 
 **Compatibilidad:** si se indica `--firmware-version`, las capacidades generales sin una evidencia coincidente pasan a estado **unknown** para esa versión, conservando su documentación general por separado. No se validan dispositivos físicos ni cumplimiento de reglas regionales. Para ejemplos de garantías y límites, consulta [la especificación y fuentes v0.6](docs/ONTOLOGY_V06.md).
+
+
+## Firmware Knowledge Graph v0.7
+
+El índice estructural se construye **localmente**, sin redistribuir el firmware. Para comparar releases hay que disponer de ambos tags en un clon Git oficial:
+
+```bash
+git clone --filter=blob:none https://github.com/flipperdevices/flipperzero-firmware.git data/firmware-upstream
+cd data/firmware-upstream && git fetch --tags origin && cd ../..
+# Consulta tags disponibles antes de sustituir <VERSION_A> y <VERSION_B>.
+flipper-rag firmware index --repo data/firmware-upstream --ref <VERSION_A> --index-rag
+flipper-rag firmware index --repo data/firmware-upstream --ref <VERSION_B>
+flipper-rag firmware snapshots
+flipper-rag firmware symbols --ref <VERSION_A> --query furi_thread
+flipper-rag firmware exports --ref <VERSION_A>
+flipper-rag firmware compare --before <VERSION_A> --after <VERSION_B>
+uvicorn flipper_rag.api:app --host 127.0.0.1 --port 8000
+```
+
+Abre `http://127.0.0.1:8000/firmware` para explorar símbolos y relaciones. **Advertencia:** las llamadas y referencias C son análisis estático heurístico; la existencia de una función no garantiza su exportación para FAP ni funcionamiento en el dispositivo. Las comparaciones API incompletas se señalan y no se interpretan como ausencia de cambios. Consulta [diseño, seguridad, alcance y limitaciones](docs/FIRMWARE_GRAPH_V07.md).

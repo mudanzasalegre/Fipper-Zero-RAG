@@ -10,6 +10,7 @@ from .storage import Store
 from .models import Embedder, ChatModel
 from .retrieval import Retriever
 from .ontology_api import attach_ontology
+from .firmware_api import attach_firmware
 from .service import RAGService
 from .protocols import get_protocol, search_protocols, FAMILIES
 
@@ -17,8 +18,9 @@ settings = Settings()
 store = Store(settings.db_path)
 retriever = Retriever(store, Embedder(settings))
 service = RAGService(retriever, ChatModel(settings), settings)
-app = FastAPI(title="Flipper Zero RAG", version="0.6.0", docs_url="/api/docs")
+app = FastAPI(title="Flipper Zero RAG", version="0.7.0", docs_url="/api/docs")
 attach_ontology(app)
+attach_firmware(app, settings.db_path)
 
 
 class Query(BaseModel):

@@ -53,3 +53,14 @@
 - Extraer pruebas automatizadas de cambios en símbolos C por versión (v0.7).
 - Verificar compatibilidad real de dispositivos y firmware en entornos autorizados; el RAG no certifica hardware.
 - Ampliar evidencias individualizadas para los protocolos cuyo único origen es un registro fuente.
+
+
+## 0.7 — Firmware Knowledge Graph (implementado)
+
+- Escaneo local de snapshots Git inmutables del firmware oficial (tags o SHA), con metadatos de integridad, referencias a líneas y estado de completitud.
+- Extracción estructurada conservadora de declaraciones/definiciones C, macros, tipos, includes y manifiestos `.fam` sin ejecución.
+- Grafo de referencias con resolución de símbolos y ambigüedades explícitas, búsqueda por firma/nombre, navegación y visualizador `/firmware`.
+- Comparador entre snapshots: símbolos añadidos/eliminados/movidos/modificados y comparación separada de exportaciones FAP desde `targets/f7/api_symbols.csv`.
+- CLI/API de solo lectura, sin acciones sobre hardware, tests temporales con releases simuladas.
+
+Ver [documentación de la v0.7](FIRMWARE_GRAPH_V07.md). No se ha ejecutado un benchmark de precisión semántica sobre el firmware oficial completo; la resolución de C/C++ no equivale a la de un compilador.
