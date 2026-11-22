@@ -1,0 +1,327 @@
+{
+  "web": [
+    {
+      "url": "https://docs.flipper.net/zero",
+      "category": "manual",
+      "title": "Manual oficial"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/basics/firmware-update",
+      "category": "firmware",
+      "title": "Actualización de firmware"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/basics/first-start",
+      "category": "basicos",
+      "title": "Primer inicio"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/basics/sd-card",
+      "category": "basicos",
+      "title": "Tarjeta microSD"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/basics/desktop",
+      "category": "basicos",
+      "title": "Menú y escritorio"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/sub-ghz",
+      "category": "sub-ghz",
+      "title": "Sub-GHz"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/sub-ghz/frequencies",
+      "category": "sub-ghz",
+      "title": "Frecuencias y regiones"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/sub-ghz/read",
+      "category": "sub-ghz",
+      "title": "Lectura de señales propias"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/nfc",
+      "category": "nfc",
+      "title": "NFC"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/rfid",
+      "category": "rfid",
+      "title": "RFID 125 kHz"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/infrared",
+      "category": "infrared",
+      "title": "Infrarrojos"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/ibutton",
+      "category": "ibutton",
+      "title": "iButton"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/gpio-and-modules",
+      "category": "gpio",
+      "title": "GPIO y módulos"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/bad-usb",
+      "category": "badusb",
+      "title": "Bad USB"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/u2f",
+      "category": "u2f",
+      "title": "Autenticación U2F"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/apps",
+      "category": "apps",
+      "title": "Aplicaciones"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/development",
+      "category": "development",
+      "title": "Desarrollo"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/development/cli",
+      "category": "cli",
+      "title": "Consola de comandos"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/development/hardware/tech-specs",
+      "category": "hardware",
+      "title": "Especificaciones técnicas"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/index.html",
+      "category": "development",
+      "title": "Developer Docs"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/app_dev_furi_api.html",
+      "category": "furi",
+      "title": "API Furi"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/file_formats.html",
+      "category": "fileformats",
+      "title": "Formatos de archivos"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/apps_on_sd_card.html",
+      "category": "fap",
+      "title": "FAP en SD"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js.html",
+      "category": "javascript",
+      "title": "JavaScript"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_using_js_modules.html",
+      "category": "javascript",
+      "title": "Módulos JavaScript"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/applications.html",
+      "category": "apps",
+      "title": "Desarrollo de apps"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/app_manifests.html",
+      "category": "development",
+      "title": "FAM application manifests"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/fbt.html",
+      "category": "fbt",
+      "title": "Flipper Build Tool"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/applications_on_sd_card.html",
+      "category": "development",
+      "title": "FAP and apps on SD card"
+    }
+  ],
+  "git": [
+    {
+      "id": "firmware-oficial",
+      "url": "https://github.com/flipperdevices/flipperzero-firmware.git",
+      "branch": "dev",
+      "tier": "official",
+      "category": "firmware",
+      "max_files": 2800,
+      "paths": [
+        "ReadMe.md",
+        "documentation/**/*.md",
+        "documentation/**/*.rst",
+        "applications/**/*.md",
+        "applications_user/**/*.md",
+        "lib/**/*.md",
+        "furi/**/*.md",
+        "targets/**/*.md",
+        "**/*.fam",
+        "**/application.fam",
+        "**/*.proto",
+        "**/*.md",
+        "**/*.rst"
+      ],
+      "code_paths": [
+        "furi/**/*.h",
+        "furi/**/*.c",
+        "applications/**/*.c",
+        "applications/**/*.h",
+        "applications_user/**/*.c",
+        "applications_user/**/*.h",
+        "lib/**/*.h",
+        "targets/f7/**/*.h",
+        "lib/**/*.proto",
+        "applications/**/*.js",
+        "applications/**/*.py",
+        "applications/**/*.cpp",
+        "applications/**/*.hpp",
+        "lib/**/*.c",
+        "lib/**/*.cpp",
+        "lib/**/*.h",
+        "targets/f7/**/*.c",
+        "targets/f7/**/*.h",
+        "furi/**/*.c",
+        "furi/**/*.h"
+      ]
+    },
+    {
+      "id": "apps-catalogo-oficial",
+      "url": "https://github.com/flipperdevices/flipper-application-catalog.git",
+      "branch": "main",
+      "tier": "official",
+      "category": "apps",
+      "max_files": 3000,
+      "paths": [
+        "ReadMe.md",
+        "documentation/**/*.md",
+        "applications/**/*.md",
+        "applications/**/*.yml",
+        "applications/**/*.yaml",
+        "applications/**/*.json",
+        "example/**/*.yml"
+      ],
+      "code_paths": []
+    },
+    {
+      "id": "ufbt-oficial",
+      "url": "https://github.com/flipperdevices/flipperzero-ufbt.git",
+      "branch": "dev",
+      "tier": "official",
+      "category": "development",
+      "max_files": 800,
+      "paths": [
+        "README.md",
+        "ReadMe.md",
+        "docs/**/*.md",
+        "**/README.md"
+      ],
+      "code_paths": [
+        "ufbt/**/*.py",
+        "**/*.py"
+      ]
+    },
+    {
+      "id": "protobuf-oficial",
+      "url": "https://github.com/flipperdevices/flipperzero-protobuf.git",
+      "branch": "dev",
+      "tier": "official",
+      "category": "rpc",
+      "max_files": 650,
+      "paths": [
+        "README.md",
+        "ReadMe.md",
+        "**/*.md",
+        "**/*.proto"
+      ],
+      "code_paths": []
+    },
+    {
+      "id": "qflipper-oficial",
+      "url": "https://github.com/flipperdevices/qFlipper.git",
+      "branch": "dev",
+      "tier": "official",
+      "category": "qflipper",
+      "max_files": 1000,
+      "paths": [
+        "README.md",
+        "ReadMe.md",
+        "docs/**/*.md",
+        "**/*.md"
+      ],
+      "code_paths": [
+        "src/**/*.h",
+        "src/**/*.cpp"
+      ]
+    },
+    {
+      "id": "good-faps-oficial",
+      "url": "https://github.com/flipperdevices/flipperzero-good-faps.git",
+      "branch": "dev",
+      "tier": "official",
+      "category": "fap",
+      "max_files": 750,
+      "paths": [
+        "README.md",
+        "ReadMe.md",
+        "**/*.md"
+      ],
+      "code_paths": [
+        "**/*.c",
+        "**/*.h"
+      ]
+    },
+    {
+      "id": "community-awesome",
+      "url": "https://github.com/djsime1/awesome-flipperzero.git",
+      "branch": "main",
+      "tier": "community",
+      "category": "community",
+      "max_files": 45,
+      "paths": [
+        "README.md",
+        "FAQ.md",
+        "Firmwares.md",
+        "**/*.md"
+      ],
+      "code_paths": []
+    },
+    {
+      "id": "community-unleashed",
+      "url": "https://github.com/DarkFlippers/unleashed-firmware.git",
+      "branch": "dev",
+      "tier": "community",
+      "category": "community-firmware",
+      "max_files": 200,
+      "paths": [
+        "README.md",
+        "ReadMe.md",
+        "documentation/**/*.md",
+        "**/README.md"
+      ],
+      "code_paths": []
+    },
+    {
+      "id": "community-momentum",
+      "url": "https://github.com/Next-Flip/Momentum-Firmware.git",
+      "branch": "dev",
+      "tier": "community",
+      "category": "community-firmware",
+      "max_files": 200,
+      "paths": [
+        "README.md",
+        "ReadMe.md",
+        "documentation/**/*.md",
+        "**/README.md"
+      ],
+      "code_paths": []
+    }
+  ]
+}

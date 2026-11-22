@@ -1,0 +1,27 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    restart: unless-stopped
+  rag:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      RAG_DB_PATH: /app/data/flipper_rag.sqlite3
+      RAG_OLLAMA_URL: http://ollama:11434
+      RAG_CHAT_MODEL: ${RAG_CHAT_MODEL:-qwen2.5:7b}
+      RAG_EMBED_MODEL: ${RAG_EMBED_MODEL:-nomic-embed-text}
+      RAG_CHAT_PROVIDER: ${RAG_CHAT_PROVIDER:-ollama}
+      RAG_EMBED_PROVIDER: ${RAG_EMBED_PROVIDER:-ollama}
+    volumes:
+      - ./data:/app/data
+      - ./knowledge:/app/knowledge:ro
+    depends_on:
+      - ollama
+    restart: unless-stopped
+volumes:
+  ollama-models:

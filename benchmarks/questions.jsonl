@@ -1,0 +1,4 @@
+{"question":"¿Cómo crear y compilar una aplicación externa FAP?","must_contain_url":"github.com/flipperdevices/flipperzero-firmware"}
+{"question":"¿Qué herramientas usa el firmware de Flipper Zero para desarrollo?","must_contain_url":"github.com/flipperdevices/flipperzero-firmware"}
+{"question":"¿Cómo usar la CLI para ver logs?","must_contain_url":"docs.flipper.net/zero/development/cli"}
+{"question":"¿Qué JavaScript soporta Flipper Zero?","must_contain_url":"developer.flipper.net/flipperzero/doxygen/js.html"}

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flipper Zero RAG — Knowledge Console</title>
+  <style>
+  :root {color-scheme:dark;--bg:#101319;--panel:#191e27;--border:#2b3440;--muted:#8c9aa9;--text:#eaf0f6;--accent:#ff8c47;--accent2:#ffa670;}
+  *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 80% -15%,#3b261d,transparent 40%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif} a{color:var(--accent2)}
+  .shell{min-height:100vh;display:grid;grid-template-columns:270px minmax(0,1fr)}
+  aside{border-right:1px solid var(--border);padding:32px 24px;background:#151921} .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.02em;font-size:19px}.logo{background:var(--accent);border-radius:12px;padding:9px;color:#1d1713;font-size:22px}
+  .kicker{font-size:10px;letter-spacing:.19em;text-transform:uppercase;color:var(--muted);margin-top:5px}.side-title{margin-top:44px;font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:var(--muted)}.stat{font-size:30px;font-weight:700;margin-top:16px}.stat span{font-size:12px;color:var(--muted);font-weight:400}.mini{margin-top:16px;font-size:12px;color:var(--muted)}
+  .source{margin-top:12px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:12px;display:flex;justify-content:space-between;gap:8px}.num{color:var(--accent2)}
+  main{width:min(100%,1040px);margin:auto;padding:44px 56px 72px}.eyebrow{letter-spacing:.2em;font-size:11px;color:var(--accent2);text-transform:uppercase}h1{font-size:clamp(27px,3.6vw,43px);line-height:1.17;margin:9px 0 10px;letter-spacing:-.04em}p.sub{color:var(--muted);margin:0 0 28px;max-width:660px}
+  .panel{background:rgba(25,30,39,.93);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 10px 36px #0002}.tabs{display:flex;gap:5px;margin-bottom:16px}.tab{border:1px solid transparent;background:transparent;color:var(--muted);padding:8px 16px;border-radius:9px;cursor:pointer;font-weight:600}.tab[aria-selected=true]{background:#32323a;color:#fff;border-color:#45434b}
+  select{border:1px solid var(--border);border-radius:9px;background:#11151c;color:var(--text);padding:9px 12px;max-width:100%;font:inherit;font-size:12px}.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}textarea{width:100%;border:1px solid var(--border);border-radius:12px;padding:16px;background:#11151c;color:var(--text);min-height:125px;resize:vertical;font:15px/1.5 inherit;outline:none}textarea:focus{border-color:var(--accent)}.actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;flex-wrap:wrap}.hint{font-size:12px;color:var(--muted)}button.run{background:var(--accent);border:0;border-radius:9px;color:#1d1713;padding:11px 20px;font-weight:800;cursor:pointer}button:disabled{opacity:.55;cursor:wait}
+  .response{margin-top:22px}.answer{border:1px solid var(--border);background:var(--panel);border-radius:16px;padding:24px;white-space:pre-wrap;overflow-wrap:anywhere}.response-head{display:flex;justify-content:space-between;align-items:center;margin:24px 0 12px}.response-head h2{margin:0;font-size:18px}.pill{font-size:11px;border:1px solid #584532;border-radius:100px;color:#ffc393;padding:3px 10px}
+  .results{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.hit{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:17px;overflow-wrap:anywhere}.hit .top{color:var(--accent2);font-size:11px;letter-spacing:.06em;text-transform:uppercase}.hit h3{font-size:14px;line-height:1.4;margin:9px 0}.hit p{font-size:12px;color:var(--muted);margin:0 0 10px;max-height:100px;overflow:auto;white-space:pre-wrap}.hit a{font-size:12px}.status{font-size:12px;color:var(--muted)} .error{color:#ffaaa0} .empty{padding:20px;color:var(--muted)}
+  @media(max-width:800px){.shell{display:block}aside{border-right:0;border-bottom:1px solid var(--border);padding:18px 22px}.side-title,.sources{display:none}.brand{font-size:16px}.stat{display:inline;font-size:16px}.mini{display:inline;margin-left:12px}main{padding:30px 19px 58px}}
+  </style>
+</head>
+<body><div class="shell">
+ <aside><div class="brand"><span class="logo">◈</span><div>FLIPPER ZERO<div class="kicker">RAG / Knowledge console</div></div></div>
+  <div class="side-title">Base documental</div><div class="stat"><span id="documents">—</span> <span>documentos</span></div><div class="stat"><span id="chunks">—</span> <span>fragmentos</span></div><div class="mini" id="coverage">Vectorización: —</div>
+  <div class="side-title sources">Fuentes indexadas</div><div id="sources" class="sources"></div>
+  <div class="side-title">Arquitectura</div><div class="mini">SQLite FTS5 · Embeddings opcionales · Ollama / API compatible · Referencias verificables</div>
+ </aside>
+ <main><div class="eyebrow">LOCAL-FIRST / RESEARCH ASSISTANT</div><h1>Todo sobre Flipper Zero.<br>Con fuentes, no con suposiciones.</h1>
+ <p class="sub">Consulta el firmware, las APIs, los módulos y la documentación oficial. Cada respuesta va acompañada de sus referencias.</p>
+ <div class="panel"><div class="tabs"><button id="askTab" class="tab" aria-selected="true">Asistente RAG</button><button id="searchTab" class="tab" aria-selected="false">Buscar fragmentos</button></div>
+  <form id="form"><label for="query" class="hint">Escribe tu pregunta</label><textarea id="query" required minlength="2" maxlength="3000" placeholder="Ej.: ¿Cómo crear una aplicación FAP con uFBT y cuál es el manifiesto application.fam?"></textarea>
+   <div class="filters"><label class="hint" for="trust">Fuente
+  <select id="trust"><option value="">Todas</option><option value="official">Oficial</option><option value="community">Comunidad</option><option value="local">Notas locales</option></select></label>
+  <label class="hint" for="retrieval">Búsqueda
+  <select id="retrieval"><option value="hybrid">Híbrida</option><option value="lexical">FTS5</option><option value="semantic">Semántica</option></select></label></div>
+   <div class="actions"><span class="hint">Ctrl/⌘ + Enter para consultar</span><button id="run" class="run" type="submit">Consultar fuentes</button></div></form>
+ </div><div id="status" class="status" style="margin-top:14px" aria-live="polite"></div><section id="output" class="response" aria-live="polite"></section>
+ </main>
+</div>
+<script>
+const q=s=>document.querySelector(s);let mode='ask';
+function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
+function setMode(m){mode=m; q('#askTab').setAttribute('aria-selected',String(m==='ask'));q('#searchTab').setAttribute('aria-selected',String(m==='search'));q('#run').textContent=m==='ask'?'Preguntar al RAG':'Buscar en el índice';q('#output').replaceChildren();q('#status').textContent='';}
+q('#askTab').onclick=()=>setMode('ask');q('#searchTab').onclick=()=>setMode('search');
+async function refresh(){try{const s=await (await fetch('/api/stats')).json();q('#documents').textContent=s.documents;q('#chunks').textContent=s.chunks;q('#coverage').textContent='Embeddings: '+s.embedded_chunks+'/'+s.chunks+' fragmentos';const holder=q('#sources');holder.replaceChildren();for(const src of s.sources){const d=el('div','source');d.append(el('span','',src.source_id),el('span','num',String(src.documents)));holder.append(d);}}catch(e){q('#coverage').textContent='No se pudo consultar el índice';}}
+function renderHits(hits){const heading=el('div','response-head');heading.append(el('h2','','Fuentes documentales'),el('span','pill',hits.length+' fragmentos'));q('#output').append(heading);const grid=el('div','results');for(const hit of hits){const card=el('article','hit');card.append(el('div','top',`${hit.trust || "sin clasificar"} · ${hit.category} · ${hit.source_id}`),el('h3','',hit.title),el('p','',hit.content));const a=el('a','',`Consultar fuente · líneas ${hit.line_start}-${hit.line_end}`);if(!/^https:\/\/|^http:\/\/|^file:\/\//.test(hit.url))continue; a.href=hit.url;a.target='_blank';a.rel='noopener noreferrer';card.append(a);grid.append(card);}q('#output').append(grid);}
+q('#form').addEventListener('submit',async e=>{e.preventDefault();const question=q('#query').value.trim();if(question.length<2)return;q('#run').disabled=true;q('#output').replaceChildren();q('#status').textContent='Consultando el índice…';try{const r=await fetch(mode==='ask'?'/api/ask':'/api/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:question,top_k:6,mode:q('#retrieval').value,trust:q('#trust').value||null})});if(!r.ok)throw Error('HTTP '+r.status);const data=await r.json();const hits=mode==='ask'?data.sources:data.results;if(mode==='ask'){const h=el('div','response-head');h.append(el('h2','','Respuesta'),el('span','pill',data.generated?'Modelo + evidencia':'Solo recuperación'));q('#output').append(h,el('div','answer',data.answer));}if(hits.length)renderHits(hits);else q('#output').append(el('div','empty','No se encontraron coincidencias. Prueba a sincronizar documentación o reformular la consulta.'));q('#status').textContent=data.semantic_available?'Coincidencias semánticas disponibles':'Sin vectores semánticos en esta consulta';}catch(err){q('#status').textContent='Error: '+err.message;q('#status').classList.add('error');}finally{q('#run').disabled=false;}});
+q('#query').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();q('#form').requestSubmit();}});
+refresh();
+</script></body></html>
