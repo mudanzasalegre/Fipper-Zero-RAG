@@ -11,6 +11,7 @@ from .models import Embedder, ModelUnavailable
 from .reranking import LocalReranker, RerankerUnavailable
 from .storage import Store
 from .terminology import expand_query
+from .protocols import get_protocol
 from .versioning import compatibility, normalize_version
 
 
@@ -60,13 +61,17 @@ class Retriever:
     def search(self, query: str, top_k: int = 6, category: str | None = None,
                mode: str = 'hybrid', trust: str | None = None, source_id: str | None = None,
                expand: bool = True, firmware_version: str | None = None,
-               version_policy: str = 'include-unversioned', rerank: bool | None = None) -> dict:
+               version_policy: str = 'include-unversioned', rerank: bool | None = None,
+               protocol: str | None = None) -> dict:
         if mode not in {'hybrid', 'lexical', 'semantic'}:
             raise ValueError('mode must be hybrid, lexical or semantic')
         if trust not in {None, 'official', 'community', 'local'}:
             raise ValueError('invalid trust level')
         if version_policy not in {'strict', 'include-unversioned'}:
             raise ValueError('invalid version policy')
+        chosen_protocol = get_protocol(protocol) if protocol else None
+        if protocol and chosen_protocol is None:
+            raise ValueError('Unknown or ambiguous protocol id; use flipper-rag protocols list')
         if firmware_version:
             firmware_version = normalize_version(firmware_version)
         if not query.strip():
@@ -81,6 +86,10 @@ class Retriever:
             extra = expand_query(query)
             if extra:
                 expanded = self.store.lexical(extra, 80, **filters)
+        protocol_hits = []
+        if mode != 'semantic' and chosen_protocol:
+            terms = chosen_protocol['name'] + ' ' + chosen_protocol['id'].replace('-', ' ')
+            protocol_hits = self.store.lexical(terms, 80, **filters)
         semantic: list[str] = []
         semantic_backend, semantic_reason = 'not-used', ''
         if mode != 'lexical' and self.embedder.active:
@@ -92,7 +101,7 @@ class Retriever:
         ranks: dict[str, float] = {}
         signals: dict[str, list[str]] = {}
         for weight, label, seq in ((1.2, 'lexical', lexical), (0.45, 'terminology', expanded),
-                                   (1.0, 'semantic', semantic)):
+                                   (0.85, 'protocol', protocol_hits), (1.0, 'semantic', semantic)):
             for rank, cid in enumerate(seq, start=1):
                 ranks[cid] = ranks.get(cid, 0.0) + weight / (60 + rank)
                 signals.setdefault(cid, []).append(label)
@@ -135,7 +144,7 @@ class Retriever:
                                       item.get('firmware_channel', 'unversioned'), firmware_version)
                 item['compatibility'] = claim.status
                 item['compatibility_note'] = claim.note
-            if item['url'].startswith('https://github.com/'):
+            if item['url'].startswith('https://github.com/') and item['source_id'] != 'catalogo-protocolos' and '#' not in item['url']:
                 item['url'] += f"#L{item['line_start']}-L{item['line_end']}"
             selected.append(item)
             if len(selected) >= limit:
@@ -144,4 +153,5 @@ class Retriever:
                 'retrieval_mode': mode, 'semantic_backend': semantic_backend,
                 'semantic_reason': semantic_reason, 'reranker_status': rerank_status,
                 'firmware_version': firmware_version, 'version_policy': version_policy,
-                'terminology_expanded': bool(expanded)}
+                'terminology_expanded': bool(expanded),
+                'protocol': chosen_protocol}

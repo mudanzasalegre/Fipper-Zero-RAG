@@ -16,7 +16,7 @@ def load_cases(path: Path) -> list[dict]:
         case = json.loads(line)
         if not isinstance(case, dict) or not isinstance(case.get("question"), str):
             raise ValueError(f"Invalid benchmark case at line {n}: missing question")
-        if "must_contain_url" not in case and "expected_urls_any" not in case and not case.get("should_abstain"):
+        if not any(k in case for k in ("must_contain_url", "expected_urls_any", "must_contain_title")) and not case.get("should_abstain"):
             raise ValueError(f"Invalid benchmark case at line {n}: missing expectation")
         items.append(case)
     return items
@@ -50,11 +50,15 @@ def evaluate(retriever: Retriever, cases: Iterable[dict], *, top_k: int = 6,
             position = None
         else:
             positive += 1
-            urls = case.get("expected_urls_any") or [case["must_contain_url"]]
-            if not isinstance(urls, list) or not urls:
-                raise ValueError("expected_urls_any must be a non-empty list")
+            urls = case.get("expected_urls_any") or ([case["must_contain_url"]] if "must_contain_url" in case else [])
+            if not isinstance(urls, list):
+                raise ValueError("expected_urls_any must be a list")
+            title = case.get("must_contain_title", "")
+            if not urls and not title:
+                raise ValueError("Benchmark needs a URL or a title expectation")
             position = next((i for i, hit in enumerate(found, 1)
-                             if any(expected in hit["url"] for expected in urls)), None)
+                             if (not urls or any(expected in hit["url"] for expected in urls))
+                             and (not title or title.casefold() in hit["title"].casefold())), None)
             success = position is not None
             hits += int(success)
             reciprocal += 1.0 / position if position else 0.0

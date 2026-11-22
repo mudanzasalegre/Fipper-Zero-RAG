@@ -8,7 +8,7 @@
 
 ## Qué incluye
 
-- **Cobertura ampliada (v0.4)**: 61 páginas web semilla, 6 repositorios oficiales (firmware, catálogo, uFBT, Protobuf, qFlipper, ejemplos FAP) y 3 fuentes comunitarias opt-in. Ingesta real: páginas web seleccionadas y recorrido opcional de enlaces de `docs.flipper.net` y `developer.flipper.net`, repositorio de firmware oficial, catálogo de aplicaciones oficial y archivos locales.
+- **Cobertura ampliada (v0.5)**: 68 páginas web semilla, 6 repositorios oficiales (firmware, catálogo, uFBT, Protobuf, qFlipper, ejemplos FAP) y 3 fuentes comunitarias opt-in. Ingesta real: páginas web seleccionadas y recorrido opcional de enlaces de `docs.flipper.net` y `developer.flipper.net`, repositorio de firmware oficial, catálogo de aplicaciones oficial y archivos locales.
 - **Rastreabilidad**: URLs de fuentes originales, categorías, confianza (`official`/`community`/`local`), hashes, commit Git y líneas del código fuente.
 - **Búsqueda híbrida**: SQLite FTS5 (léxica/BM25) + embeddings Ollama (similitud coseno), fusionadas mediante Reciprocal Rank Fusion. **USearch HNSW** (ANN persistente opcional), búsqueda exacta de respaldo si la caché no está lista.
 - **Reranking local opcional**: CrossEncoder multilingüe sobre una shortlist de resultados; requiere dependencia extra e instalación local del modelo.
@@ -24,7 +24,9 @@
 
 **Novedades v0.4 (2026-11-22):** caché ANN HNSW persistente de USearch con invalidación por cambios SQLite y recuperación exacta automática; reranker local opcional con CrossEncoder y filtro versionado sobre snapshots oficiales por Git tag, sin inferir compatibilidad de documentación genérica o ramas dev. La integración ANN nativa se prueba en un job específico de CI. Ver [especificación técnica v0.4](docs/ITERATION_V04.md).
 
-**Estado del contenido:** se incluyen 15 guías originales de conocimiento introductorio redactadas para este proyecto. La documentación ajena no está empaquetada ni preindexada. La ingesta de fuentes oficiales debe ejecutarse explícitamente; al hacerlo se descargarán y crearán los índices locales.
+**Novedades v0.5 (2026-11-22):** módulo de protocolos verificables con **118 fichas curatoriales** y 9 familias (`nfc`, `lf-rfid`, `sub-ghz`, `infrared`, `ibutton`, `gpio`, `expansion`, `bluetooth`, `usb`), 8 guías originales, **68 páginas semilla** en el catálogo oficial, selector en la web, nuevas rutas API y CLI (`protocols list|validate|index`, `--protocol`). Protocolo presente en código `dev` ≠ capacidad garantizada en una release. Los resúmenes son de confianza **local**, aunque enlazan documentación oficial; los filtros estrictos de firmware siguen excluyendo fichas sin versión. [Diseño y fuentes v0.5](docs/PROTOCOLS_V05.md).
+
+**Estado del contenido:** se incluyen 15 guías introductorias y 8 guías especializadas de protocolos redactadas para este proyecto. La documentación ajena no está empaquetada ni preindexada. La ingesta de fuentes oficiales debe ejecutarse explícitamente; al hacerlo se descargarán y crearán los índices locales.
 
 ## Inicio rápido A — Windows 11, Linux, Mac (Python)
 
@@ -41,6 +43,8 @@ python -m pip install -e ".[dev]"
 
 # Primeros documentos locales (no necesita Ollama):
 flipper-rag ingest --path knowledge/starter
+flipper-rag protocols index  # 118 fichas originales con referencias oficiales
+flipper-rag ingest --path knowledge/protocols --source-id guias-protocolos
 flipper-rag stats
 flipper-rag runs # historial de sincronizaciones
 flipper-rag audit # Comprueba que las fuentes y el índice sean coherentes
@@ -161,6 +165,21 @@ flipper-rag ask "Funciones NFC en 1.5.1" --firmware-version 1.5.1 --version-poli
 ```
 
 La versión `strict` **solo busca snapshots explícitamente etiquetados**; un manual web actual sin versión queda fuera. La política `include-unversioned` permite mostrar manuales genéricos como «compatibilidad no verificada», nunca como documentación certificada para la versión consultada. El asistente mantiene referencias a revisión Git y un campo visible de compatibilidad. Consulta [arquitectura y limitaciones](docs/ITERATION_V04.md).
+
+## Catálogo especializado de protocolos (v0.5)
+
+```bash
+flipper-rag protocols validate
+flipper-rag protocols list --family nfc --query iso
+flipper-rag protocols list --family sub-ghz --query princeton
+flipper-rag protocols index                   # offline, 118 registros
+flipper-rag ingest --path knowledge/protocols --source-id guias-protocolos
+flipper-rag search "¿En qué se diferencia ISO14443-4A de MIFARE?" --protocol iso-14443-4a --mode lexical
+flipper-rag ask "¿Qué significa protocolo NEC?" --protocol nec
+flipper-rag eval --file benchmarks/protocols_offline.jsonl --mode lexical
+```
+
+La API incluye `GET /api/protocols`, `GET /api/protocols/{id}` y `protocol` opcional en las consultas. El índice de fichas curatoriales no requiere conexión a Internet; las fuentes originales se sincronizan por separado. **El registro cataloga nombres y su procedencia, no constituye un inventario validado de acciones disponibles.** Consulta [el diseño v0.5](docs/PROTOCOLS_V05.md).
 
 ## Comandos
 

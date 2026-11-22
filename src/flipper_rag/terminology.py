@@ -36,6 +36,21 @@ ALIASES: dict[str, str] = {
     "formato archivo": "file format",
     "protocolo de expansion": "expansion protocol",
     "controlador": "driver hal",
+    "iso 14443": "nfc iso14443-3a iso14443-4a",
+    "mifare": "nfc classic ultralight desfire",
+    "nfc v": "iso15693 hf",
+    "nfc f": "felica hf",
+    "tag nfc": "ntag ultralight",
+    "identificacion por radiofrecuencia": "rfid 125 khz",
+    "codigo fijo": "subghz fixed code",
+    "codigo variable": "subghz rolling code",
+    "codigo evolutivo": "subghz rolling code",
+    "modulacion ook": "subghz ook amplitude shift keying",
+    "modulacion fsk": "subghz fsk frequency shift keying",
+    "one wire": "ibutton dallas 1-wire",
+    "infrarrojo nec": "infrared nec remote",
+    "serie uart": "expansion protocol serial",
+    "trama protobuf": "rpc protobuf expansion",
 }
 
 

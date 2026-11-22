@@ -1,0 +1,1327 @@
+{
+  "schema_version": 1,
+  "last_reviewed": "2026-11-22",
+  "notice": "Curated summaries with upstream references; not a compatibility certificate or permission to transmit.",
+  "entries": [
+    {
+      "id": "iso-14443-3a",
+      "name": "ISO 14443-3A",
+      "family": "nfc",
+      "layer": "HF NFC",
+      "evidence_scope": "file-format-or-tech-spec",
+      "aliases": [
+        "ISO14443-3A",
+        "ISO14443A",
+        "NFC-A"
+      ],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+      "summary": "Nivel de identificación y anticolisión de tarjetas tipo A; no equivale a MIFARE Classic ni a DESFire."
+    },
+    {
+      "id": "iso-14443-3b",
+      "name": "ISO 14443-3B",
+      "family": "nfc",
+      "layer": "HF NFC",
+      "evidence_scope": "file-format-or-tech-spec",
+      "aliases": [
+        "ISO14443-3B",
+        "ISO14443B",
+        "NFC-B"
+      ],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+      "summary": "Trama/anticolisión tipo B; distinta de tipo A."
+    },
+    {
+      "id": "iso-14443-4a",
+      "name": "ISO 14443-4A",
+      "family": "nfc",
+      "layer": "HF NFC",
+      "evidence_scope": "file-format-or-tech-spec",
+      "aliases": [
+        "ISO14443-4A",
+        "ISO-DEP"
+      ],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+      "summary": "Intercambio de bloques sobre ISO 14443-A; se documenta ATS en el formato NFC."
+    },
+    {
+      "id": "iso-15693",
+      "name": "ISO 15693",
+      "family": "nfc",
+      "layer": "HF NFC",
+      "evidence_scope": "file-format-or-tech-spec",
+      "aliases": [
+        "ISO15693",
+        "NFC-V"
+      ],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+      "summary": "Familia HF de proximidad/largo alcance relativo; presente en implementación NFC, verificar release."
+    },
+    {
+      "id": "mifare-classic",
+      "name": "MIFARE Classic",
+      "family": "nfc",
+      "layer": "HF NFC",
+      "evidence_scope": "file-format-or-tech-spec",
+      "aliases": [
+        "Mifare Classic",
+        "MFC"
+      ],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+      "summary": "Familia basada en sectores y bloques; los datos protegidos dependen de autenticación. No equiparar UID con contenido."
+    },
+    {
+      "id": "mifare-ultralight",
+      "name": "MIFARE Ultralight",
+      "family": "nfc",
+      "layer": "HF NFC",
+      "evidence_scope": "file-format-or-tech-spec",
+      "aliases": [
+        "Ultralight"
+      ],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+      "summary": "Familia de memoria por páginas; firmware registra datos por página, contadores y variantes."
+    },
+    {
+      "id": "mifare-desfire",
+      "name": "MIFARE DESFire",
+      "family": "nfc",
+      "layer": "HF NFC",
+      "evidence_scope": "file-format-or-tech-spec",
+      "aliases": [
+        "DESFire",
+        "DESFire EV"
+      ],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+      "summary": "Tarjeta con aplicaciones y archivos; los datos disponibles dependen de los permisos y claves."
+    },
+    {
+      "id": "ntag213",
+      "name": "NTAG213",
+      "family": "nfc",
+      "layer": "HF NFC",
+      "evidence_scope": "file-format-or-tech-spec",
+      "aliases": [
+        "NTAG 213"
+      ],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+      "summary": "Tag NFC con páginas; enumerado en la documentación de formatos NTAG/Ultralight."
+    },
+    {
+      "id": "ntag215",
+      "name": "NTAG215",
+      "family": "nfc",
+      "layer": "HF NFC",
+      "evidence_scope": "file-format-or-tech-spec",
+      "aliases": [
+        "NTAG 215"
+      ],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+      "summary": "Variante NTAG enumerada en el formato oficial."
+    },
+    {
+      "id": "ntag216",
+      "name": "NTAG216",
+      "family": "nfc",
+      "layer": "HF NFC",
+      "evidence_scope": "file-format-or-tech-spec",
+      "aliases": [
+        "NTAG 216"
+      ],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+      "summary": "Variante NTAG enumerada en el formato oficial."
+    },
+    {
+      "id": "nfc-felica",
+      "name": "NFC FeliCa",
+      "family": "nfc",
+      "layer": "HF NFC",
+      "evidence_scope": "file-format-or-tech-spec",
+      "aliases": [
+        "Felica",
+        "NFC-F"
+      ],
+      "reference": "https://docs.flipper.net/zero/development/hardware/tech-specs",
+      "summary": "Familia NFC de Sony presente en especificaciones; capacidades específicas dependen de firmware."
+    },
+    {
+      "id": "hid-iclass-picopass",
+      "name": "HID iCLASS Picopass",
+      "family": "nfc",
+      "layer": "HF NFC",
+      "evidence_scope": "file-format-or-tech-spec",
+      "aliases": [
+        "Picopass",
+        "iCLASS"
+      ],
+      "reference": "https://docs.flipper.net/zero/development/hardware/tech-specs",
+      "summary": "Familia indicada en especificaciones técnicas; soporte de funciones concreto depende de versión."
+    },
+    {
+      "id": "em4100",
+      "name": "EM4100",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "em4100-32",
+      "name": "EM4100/32",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "em4100-16",
+      "name": "EM4100/16",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "hid-h10301",
+      "name": "HID H10301",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "idteck-idteck",
+      "name": "IDTECK Idteck",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "motorola-indala-26",
+      "name": "Motorola Indala 26",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "kantech-ioprox-xsf",
+      "name": "Kantech IoProx XSF",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "awid",
+      "name": "AWID",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "fecava-fdx-a",
+      "name": "FECAVA FDX-A",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "iso-fdx-b",
+      "name": "ISO FDX-B",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "generic-hid-prox",
+      "name": "Generic HID Prox",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "generic-hid-ext",
+      "name": "Generic HID Ext",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "farpointe-pyramid",
+      "name": "Farpointe Pyramid",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "viking",
+      "name": "Viking",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "jablotron",
+      "name": "Jablotron",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "paradox",
+      "name": "Paradox",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "pac-stanley",
+      "name": "PAC Stanley",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "keri",
+      "name": "Keri",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "gallagher",
+      "name": "Gallagher",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "honeywell-nexwatch",
+      "name": "Honeywell Nexwatch",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "electra",
+      "name": "Electra",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "securakey",
+      "name": "Securakey",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "guardall-g-prox-ii",
+      "name": "Guardall G-Prox II",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "noralsy",
+      "name": "Noralsy",
+      "family": "lf-rfid",
+      "layer": "LF 125 kHz",
+      "evidence_scope": "official-reader-list",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/rfid/read",
+      "summary": "Formato de transpondedor de baja frecuencia citado por el manual oficial. No presupone cifrado, escritura universal o compatibilidad con todos los lectores."
+    },
+    {
+      "id": "nec",
+      "name": "NEC",
+      "family": "infrared",
+      "layer": "IR protocol",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+      "summary": "Nombre de protocolo infrarrojo reconocido por la documentación de formatos de señales interpretadas. La captura en bruto es un modo distinto."
+    },
+    {
+      "id": "necext",
+      "name": "NECext",
+      "family": "infrared",
+      "layer": "IR protocol",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+      "summary": "Nombre de protocolo infrarrojo reconocido por la documentación de formatos de señales interpretadas. La captura en bruto es un modo distinto."
+    },
+    {
+      "id": "nec42",
+      "name": "NEC42",
+      "family": "infrared",
+      "layer": "IR protocol",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+      "summary": "Nombre de protocolo infrarrojo reconocido por la documentación de formatos de señales interpretadas. La captura en bruto es un modo distinto."
+    },
+    {
+      "id": "nec42ext",
+      "name": "NEC42ext",
+      "family": "infrared",
+      "layer": "IR protocol",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+      "summary": "Nombre de protocolo infrarrojo reconocido por la documentación de formatos de señales interpretadas. La captura en bruto es un modo distinto."
+    },
+    {
+      "id": "samsung32",
+      "name": "Samsung32",
+      "family": "infrared",
+      "layer": "IR protocol",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+      "summary": "Nombre de protocolo infrarrojo reconocido por la documentación de formatos de señales interpretadas. La captura en bruto es un modo distinto."
+    },
+    {
+      "id": "rc6",
+      "name": "RC6",
+      "family": "infrared",
+      "layer": "IR protocol",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+      "summary": "Nombre de protocolo infrarrojo reconocido por la documentación de formatos de señales interpretadas. La captura en bruto es un modo distinto."
+    },
+    {
+      "id": "rc5",
+      "name": "RC5",
+      "family": "infrared",
+      "layer": "IR protocol",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+      "summary": "Nombre de protocolo infrarrojo reconocido por la documentación de formatos de señales interpretadas. La captura en bruto es un modo distinto."
+    },
+    {
+      "id": "rc5x",
+      "name": "RC5X",
+      "family": "infrared",
+      "layer": "IR protocol",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+      "summary": "Nombre de protocolo infrarrojo reconocido por la documentación de formatos de señales interpretadas. La captura en bruto es un modo distinto."
+    },
+    {
+      "id": "sirc",
+      "name": "SIRC",
+      "family": "infrared",
+      "layer": "IR protocol",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+      "summary": "Nombre de protocolo infrarrojo reconocido por la documentación de formatos de señales interpretadas. La captura en bruto es un modo distinto."
+    },
+    {
+      "id": "sirc15",
+      "name": "SIRC15",
+      "family": "infrared",
+      "layer": "IR protocol",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+      "summary": "Nombre de protocolo infrarrojo reconocido por la documentación de formatos de señales interpretadas. La captura en bruto es un modo distinto."
+    },
+    {
+      "id": "sirc20",
+      "name": "SIRC20",
+      "family": "infrared",
+      "layer": "IR protocol",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+      "summary": "Nombre de protocolo infrarrojo reconocido por la documentación de formatos de señales interpretadas. La captura en bruto es un modo distinto."
+    },
+    {
+      "id": "kaseikyo",
+      "name": "Kaseikyo",
+      "family": "infrared",
+      "layer": "IR protocol",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+      "summary": "Nombre de protocolo infrarrojo reconocido por la documentación de formatos de señales interpretadas. La captura en bruto es un modo distinto."
+    },
+    {
+      "id": "rca",
+      "name": "RCA",
+      "family": "infrared",
+      "layer": "IR protocol",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+      "summary": "Nombre de protocolo infrarrojo reconocido por la documentación de formatos de señales interpretadas. La captura en bruto es un modo distinto."
+    },
+    {
+      "id": "ds1990",
+      "name": "DS1990",
+      "family": "ibutton",
+      "layer": "1-Wire / contact key",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+      "summary": "Protocolo o familia de llaves iButton descrita en los formatos del firmware. Las capacidades dependen del modelo concreto."
+    },
+    {
+      "id": "ds1992",
+      "name": "DS1992",
+      "family": "ibutton",
+      "layer": "1-Wire / contact key",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+      "summary": "Protocolo o familia de llaves iButton descrita en los formatos del firmware. Las capacidades dependen del modelo concreto."
+    },
+    {
+      "id": "ds1996",
+      "name": "DS1996",
+      "family": "ibutton",
+      "layer": "1-Wire / contact key",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+      "summary": "Protocolo o familia de llaves iButton descrita en los formatos del firmware. Las capacidades dependen del modelo concreto."
+    },
+    {
+      "id": "ds1971",
+      "name": "DS1971",
+      "family": "ibutton",
+      "layer": "1-Wire / contact key",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+      "summary": "Protocolo o familia de llaves iButton descrita en los formatos del firmware. Las capacidades dependen del modelo concreto."
+    },
+    {
+      "id": "dsgeneric",
+      "name": "DSGeneric",
+      "family": "ibutton",
+      "layer": "1-Wire / contact key",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+      "summary": "Protocolo o familia de llaves iButton descrita en los formatos del firmware. Las capacidades dependen del modelo concreto."
+    },
+    {
+      "id": "cyfral",
+      "name": "Cyfral",
+      "family": "ibutton",
+      "layer": "1-Wire / contact key",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+      "summary": "Protocolo o familia de llaves iButton descrita en los formatos del firmware. Las capacidades dependen del modelo concreto."
+    },
+    {
+      "id": "metakom",
+      "name": "Metakom",
+      "family": "ibutton",
+      "layer": "1-Wire / contact key",
+      "evidence_scope": "file-format-listed",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+      "summary": "Protocolo o familia de llaves iButton descrita en los formatos del firmware. Las capacidades dependen del modelo concreto."
+    },
+    {
+      "id": "subghz-gate-tx",
+      "name": "gate_tx",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_gate_tx"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-keeloq",
+      "name": "keeloq",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_keeloq"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-star-line",
+      "name": "star_line",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_star_line"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-nice-flo",
+      "name": "nice_flo",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_nice_flo"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-came",
+      "name": "came",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_came"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-faac-slh",
+      "name": "faac_slh",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_faac_slh"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-nice-flor-s",
+      "name": "nice_flor_s",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_nice_flor_s"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-came-twee",
+      "name": "came_twee",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_came_twee"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-came-atomo",
+      "name": "came_atomo",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_came_atomo"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-nero-sketch",
+      "name": "nero_sketch",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_nero_sketch"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-ido",
+      "name": "ido",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_ido"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-kia",
+      "name": "kia",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_kia"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-hormann",
+      "name": "hormann",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_hormann"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-nero-radio",
+      "name": "nero_radio",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_nero_radio"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-somfy-telis",
+      "name": "somfy_telis",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_somfy_telis"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-somfy-keytis",
+      "name": "somfy_keytis",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_somfy_keytis"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-scher-khan",
+      "name": "scher_khan",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_scher_khan"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-princeton",
+      "name": "princeton",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_princeton"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-raw",
+      "name": "raw",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_raw"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-linear",
+      "name": "linear",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_linear"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-secplus-v2",
+      "name": "secplus_v2",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_secplus_v2"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-secplus-v1",
+      "name": "secplus_v1",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_secplus_v1"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-megacode",
+      "name": "megacode",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_megacode"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-holtek",
+      "name": "holtek",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_holtek"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-chamb-code",
+      "name": "chamb_code",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_chamb_code"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-power-smart",
+      "name": "power_smart",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_power_smart"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-marantec",
+      "name": "marantec",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_marantec"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-bett",
+      "name": "bett",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_bett"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-doitrand",
+      "name": "doitrand",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_doitrand"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-phoenix-v2",
+      "name": "phoenix_v2",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_phoenix_v2"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-honeywell-wdb",
+      "name": "honeywell_wdb",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_honeywell_wdb"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-magellan",
+      "name": "magellan",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_magellan"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-intertechno-v3",
+      "name": "intertechno_v3",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_intertechno_v3"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-clemsa",
+      "name": "clemsa",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_clemsa"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-ansonic",
+      "name": "ansonic",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_ansonic"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-smc5326",
+      "name": "smc5326",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_smc5326"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-holtek-th12x",
+      "name": "holtek_th12x",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_holtek_th12x"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-linear-delta3",
+      "name": "linear_delta3",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_linear_delta3"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-dooya",
+      "name": "dooya",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_dooya"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-alutech-at-4n",
+      "name": "alutech_at_4n",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_alutech_at_4n"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-kinggates-stylo-4k",
+      "name": "kinggates_stylo_4k",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_kinggates_stylo_4k"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-bin-raw",
+      "name": "bin_raw",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_bin_raw"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-mastercode",
+      "name": "mastercode",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_mastercode"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-legrand",
+      "name": "legrand",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_legrand"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-dickert-mahs",
+      "name": "dickert_mahs",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_dickert_mahs"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-gangqi",
+      "name": "gangqi",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_gangqi"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-marantec24",
+      "name": "marantec24",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_marantec24"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-hollarm",
+      "name": "hollarm",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_hollarm"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-hay21",
+      "name": "hay21",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_hay21"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-revers-rb2",
+      "name": "revers_rb2",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_revers_rb2"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-feron",
+      "name": "feron",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_feron"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-roger",
+      "name": "roger",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_roger"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "subghz-elplast",
+      "name": "elplast",
+      "family": "sub-ghz",
+      "layer": "sub-1 GHz protocol registry",
+      "evidence_scope": "dev-source-registry",
+      "aliases": [
+        "subghz_elplast"
+      ],
+      "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c",
+      "summary": "Entrada del registro de protocolos del firmware de desarrollo. No garantiza transmisión permitida, interoperabilidad, clonación ni soporte en una release instalada."
+    },
+    {
+      "id": "uart",
+      "name": "UART",
+      "family": "gpio",
+      "layer": "transport/bus/profile",
+      "evidence_scope": "official-hardware-or-protocol-doc",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/gpio-and-modules",
+      "summary": "Comunicación serie asíncrona por pines GPIO. Verifica tensión, masa común, UART seleccionado, pines y velocidad."
+    },
+    {
+      "id": "spi",
+      "name": "SPI",
+      "family": "gpio",
+      "layer": "transport/bus/profile",
+      "evidence_scope": "official-hardware-or-protocol-doc",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/gpio-and-modules",
+      "summary": "Bus serie síncrono. Flipper puede interactuar con periféricos compatibles, según firmware/hardware."
+    },
+    {
+      "id": "i2c",
+      "name": "I2C",
+      "family": "gpio",
+      "layer": "transport/bus/profile",
+      "evidence_scope": "official-hardware-or-protocol-doc",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/gpio-and-modules",
+      "summary": "Bus de dos líneas para periféricos. Requiere niveles y resistencias adecuados."
+    },
+    {
+      "id": "1-wire",
+      "name": "1-Wire",
+      "family": "ibutton",
+      "layer": "transport/bus/profile",
+      "evidence_scope": "official-hardware-or-protocol-doc",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+      "summary": "Bus de un hilo de la familia Dallas; distinto de claves Cyfral/Metakom y de 125 kHz RFID."
+    },
+    {
+      "id": "flipper-expansion-protocol",
+      "name": "Flipper Expansion Protocol",
+      "family": "expansion",
+      "layer": "transport/bus/profile",
+      "evidence_scope": "official-hardware-or-protocol-doc",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/expansion_protocol.html",
+      "summary": "Protocolo de expansión UART: detección, cambio de baud rate y tramas con checksum XOR; transporte de RPC."
+    },
+    {
+      "id": "rpc-protobuf",
+      "name": "RPC Protobuf",
+      "family": "expansion",
+      "layer": "transport/bus/profile",
+      "evidence_scope": "official-hardware-or-protocol-doc",
+      "aliases": [],
+      "reference": "https://developer.flipper.net/flipperzero/doxygen/expansion_protocol.html",
+      "summary": "Protocolo de mensajería RPC de la plataforma Flipper; la expansión serie puede transportarlo."
+    },
+    {
+      "id": "bluetooth-le",
+      "name": "Bluetooth LE",
+      "family": "bluetooth",
+      "layer": "transport/bus/profile",
+      "evidence_scope": "official-hardware-or-protocol-doc",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/development/hardware/tech-specs",
+      "summary": "Radio Bluetooth Low Energy integrada; perfiles y aplicaciones disponibles varían por firmware."
+    },
+    {
+      "id": "usb-cdc",
+      "name": "USB CDC",
+      "family": "usb",
+      "layer": "transport/bus/profile",
+      "evidence_scope": "official-hardware-or-protocol-doc",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/development/hardware/tech-specs",
+      "summary": "Transporte serie virtual USB, usado para consola e integración con el equipo según implementación."
+    },
+    {
+      "id": "usb-hid",
+      "name": "USB HID",
+      "family": "usb",
+      "layer": "transport/bus/profile",
+      "evidence_scope": "official-hardware-or-protocol-doc",
+      "aliases": [],
+      "reference": "https://docs.flipper.net/zero/development/hardware/tech-specs",
+      "summary": "Clase USB Human Interface Device. La disponibilidad depende de las aplicaciones y firmware."
+    }
+  ]
+}

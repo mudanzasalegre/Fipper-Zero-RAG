@@ -304,6 +304,41 @@
       "url": "https://developer.flipper.net/flipperzero/doxygen/ota_updates.html",
       "category": "firmware",
       "title": "Proceso de actualización OTA"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/nfc/read",
+      "category": "nfc",
+      "title": "Lectura y soporte de tarjetas NFC"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/rfid/read",
+      "category": "lf-rfid",
+      "title": "Protocolos de tarjetas RFID 125 kHz"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/infrared/read",
+      "category": "infrared",
+      "title": "Captura de infrarrojos"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/sub-ghz/read-raw",
+      "category": "sub-ghz",
+      "title": "Captura de señales RAW Sub-GHz"
+    },
+    {
+      "url": "https://docs.flipper.net/zero/sub-ghz/add-new-remote",
+      "category": "sub-ghz",
+      "title": "Lista de mandos configurables por protocolo"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/lfrfid_raw.html",
+      "category": "lf-rfid",
+      "title": "RFID RAW ASK/PSK"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/pages.html",
+      "category": "development",
+      "title": "Índice de referencias de desarrollo"
     }
   ],
   "git": [

@@ -16,7 +16,7 @@ from .models import Embedder, ModelUnavailable
 from .storage import Document, Store, document_id
 from .versioning import channel_for_ref, normalize_version
 
-USER_AGENT = "FlipperZeroRAG/0.4 (local educational documentation indexing)"
+USER_AGENT = "FlipperZeroRAG/0.5 (local educational documentation indexing)"
 ALLOWED_DOC_HOSTS = {"docs.flipper.net", "developer.flipper.net"}
 # Explicitly reviewed upstream repositories. Users must opt into community firmware.
 ALLOWED_GIT_REPOS = {

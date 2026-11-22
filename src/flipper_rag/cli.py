@@ -9,6 +9,7 @@ from .storage import Store
 from .sources import load_catalog, index_documents, local_documents, web_documents, git_documents
 from .retrieval import Retriever
 from .service import RAGService
+from .protocols import all_protocols, get_protocol, search_protocols, protocol_documents, SOURCE_ID
 
 
 def main(argv: list[str] | None = None):
@@ -25,6 +26,7 @@ def main(argv: list[str] | None = None):
     sync = sub.add_parser("sync", help="Retrieve and index permitted official sources")
     sync.add_argument("--catalog-file", type=Path, default=Path("sources.json"))
     sync.add_argument("--web", action="store_true", help="Fetch curated official documentation pages")
+    sync.add_argument("--protocols", action="store_true", help="Index locally curated, cited protocol descriptions")
     sync.add_argument("--firmware-ref", help="Index an official firmware release tag (e.g. 1.5.1), retaining other snapshots")
     sync.add_argument("--firmware", action="store_true", help="Clone/index official firmware docs")
     sync.add_argument("--apps", action="store_true", help="Clone/index official app catalog")
@@ -39,6 +41,11 @@ def main(argv: list[str] | None = None):
     sync.add_argument("--depth", type=int, default=2)
     sync.add_argument("--delay", type=float, default=0.6, help="Pause seconds between web fetches")
 
+    proto = sub.add_parser("protocols", help="Explore, validate or index the 118 protocol entries")
+    proto.add_argument("action", nargs="?", choices=("list", "validate", "index"), default="list")
+    proto.add_argument("--family", help="Protocol family filter")
+    proto.add_argument("--query", default="", help="Search IDs, names and aliases")
+    proto.add_argument("--limit", type=int, default=200)
     sub.add_parser("stats", help="Index and embedding coverage")
     runs = sub.add_parser("runs", help="Recent sync results per source")
     runs.add_argument("--limit", type=int, default=30)
@@ -59,6 +66,7 @@ def main(argv: list[str] | None = None):
     search.add_argument("--trust", choices=("official", "community", "local"))
     search.add_argument("--category")
     search.add_argument("--source-id")
+    search.add_argument("--protocol", help="Exact protocol registry ID or known alias")
     search.add_argument("--no-expand", action="store_true")
     search.add_argument("--firmware-version", help="Filter by exact firmware release with optional unversioned sources")
     search.add_argument("--version-policy", choices=("strict", "include-unversioned"), default="include-unversioned")
@@ -70,6 +78,7 @@ def main(argv: list[str] | None = None):
     ask.add_argument("--trust", choices=("official", "community", "local"))
     ask.add_argument("--category")
     ask.add_argument("--source-id")
+    ask.add_argument("--protocol", help="Exact protocol registry ID or known alias")
     ask.add_argument("--no-expand", action="store_true")
     ask.add_argument("--firmware-version")
     ask.add_argument("--version-policy", choices=("strict", "include-unversioned"), default="include-unversioned")
@@ -90,7 +99,20 @@ def main(argv: list[str] | None = None):
     embedder = Embedder(settings)
     retriever = Retriever(store, embedder)
 
-    if args.command == "ingest":
+    if args.command == "protocols":
+        if args.action == "validate":
+            print(json.dumps({"valid": True, "count": len(all_protocols())}, indent=2))
+        elif args.action == "index":
+            result = index_documents(store, protocol_documents(), embedder)
+            store.record_sync(SOURCE_ID, result)
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+        else:
+            try:
+                found = search_protocols(family=args.family, query=args.query, limit=args.limit)
+            except ValueError as exc:
+                p.error(str(exc))
+            print(json.dumps({"count": len(found), "protocols": found}, indent=2, ensure_ascii=False))
+    elif args.command == "ingest":
         if not args.path.is_dir():
             p.error(f"Directory not found: {args.path}")
         seen: set[str] = set()
@@ -104,10 +126,14 @@ def main(argv: list[str] | None = None):
         store.record_sync(args.source_id, result, removed=removed)
         print(json.dumps(result, indent=2, ensure_ascii=False))
     elif args.command == "sync":
-        if not any((args.web, args.firmware, args.firmware_ref, args.apps, args.tools, args.community, args.all)):
+        if not any((args.web, args.protocols, args.firmware, args.firmware_ref, args.apps, args.tools, args.community, args.all)):
             p.error("Select at least one: --web, --firmware, --apps, --tools, --community, --all")
         catalog = load_catalog(args.catalog_file)
         overall = []
+        if args.protocols or args.all:
+            result = index_documents(store, protocol_documents(), embedder, force=args.force)
+            store.record_sync(SOURCE_ID, result)
+            overall.append((SOURCE_ID, result))
         if args.web or args.all:
             web_report: dict = {}
             result = index_documents(store, web_documents(catalog, args.delay, crawl=args.crawl,
@@ -217,7 +243,7 @@ def main(argv: list[str] | None = None):
                                 mode=args.mode, trust=args.trust, source_id=args.source_id,
                                 expand=not args.no_expand,
                                 firmware_version=args.firmware_version, version_policy=args.version_policy,
-                                rerank=args.rerank)
+                                rerank=args.rerank, protocol=args.protocol)
         for i, hit in enumerate(data["results"], 1):
             print(f"[{i}] {hit['title']} ({hit['category']})\n    {hit['url']}\n    {hit['content'][:350]}\n")
         print("Semantic backend:", data['semantic_backend'], "| Rerank:", data['reranker_status'])
@@ -226,7 +252,7 @@ def main(argv: list[str] | None = None):
             " ".join(args.question), category=args.category, top_k=args.top_k,
             mode=args.mode, trust=args.trust, source_id=args.source_id,
             expand=not args.no_expand, firmware_version=args.firmware_version,
-            version_policy=args.version_policy, rerank=args.rerank)
+            version_policy=args.version_policy, rerank=args.rerank, protocol=args.protocol)
         print(data["answer"])
         for s in data["sources"]:
             print(f"[{s['citation']}] {s['title']} — {s['url']}")

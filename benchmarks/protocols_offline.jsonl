@@ -1,0 +1,14 @@
+{"question": "¿Qué es ISO 14443-4A y qué significa ATS?", "must_contain_title": "Protocolos / nfc / ISO 14443-4A", "source_id": "catalogo-protocolos", "category": "nfc"}
+{"question": "MIFARE Classic sectores y bloques", "must_contain_title": "Protocolos / nfc / MIFARE Classic", "source_id": "catalogo-protocolos", "category": "nfc"}
+{"question": "Qué es el transpondedor EM4100 125 kHz", "must_contain_title": "Protocolos / lf-rfid / EM4100", "source_id": "catalogo-protocolos", "category": "lf-rfid"}
+{"question": "Qué representa ISO FDX-B en RFID LF", "must_contain_title": "Protocolos / lf-rfid / ISO FDX-B", "source_id": "catalogo-protocolos", "category": "lf-rfid"}
+{"question": "Significado de la trama infrarroja NECext", "must_contain_title": "Protocolos / infrared / NECext", "source_id": "catalogo-protocolos", "category": "infrared"}
+{"question": "Protocolo infrarrojo Sony SIRC20", "must_contain_title": "Protocolos / infrared / SIRC20", "source_id": "catalogo-protocolos", "category": "infrared"}
+{"question": "¿Qué se guarda para DS1971 iButton EEPROM?", "must_contain_title": "Protocolos / ibutton / DS1971", "source_id": "catalogo-protocolos", "category": "ibutton"}
+{"question": "¿Es Cyfral lo mismo que Dallas?", "must_contain_title": "Protocolos / ibutton / Cyfral", "source_id": "catalogo-protocolos", "category": "ibutton"}
+{"question": "¿Qué es el protocolo princeton del firmware dev?", "must_contain_title": "Protocolos / sub-ghz / princeton", "source_id": "catalogo-protocolos", "category": "sub-ghz"}
+{"question": "Registro SubGHz KeeLoq, alcance de soporte", "must_contain_title": "Protocolos / sub-ghz / keeloq", "source_id": "catalogo-protocolos", "category": "sub-ghz"}
+{"question": "¿Qué es un bus I2C en GPIO?", "must_contain_title": "Protocolos / gpio / I2C", "source_id": "catalogo-protocolos", "category": "gpio"}
+{"question": "¿Qué protocolo usa expansión con checksum de tramas?", "must_contain_title": "Protocolos / expansion / Flipper Expansion Protocol", "source_id": "catalogo-protocolos", "category": "expansion"}
+{"question": "USB HID es un perfil de USB", "must_contain_title": "Protocolos / usb / USB HID", "source_id": "catalogo-protocolos", "category": "usb"}
+{"question": "¿Cómo configurar un telescopio espacial remoto alienígena?", "source_id": "catalogo-protocolos", "category": "nfc", "should_abstain": true}

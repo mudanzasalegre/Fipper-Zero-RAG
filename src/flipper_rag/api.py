@@ -1,7 +1,7 @@
 """Read-only, localhost-first FastAPI API. Never expose publicly without auth."""
 from __future__ import annotations
 from importlib.resources import files
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Query as Param
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 from typing import Literal
@@ -10,12 +10,13 @@ from .storage import Store
 from .models import Embedder, ChatModel
 from .retrieval import Retriever
 from .service import RAGService
+from .protocols import get_protocol, search_protocols, FAMILIES
 
 settings = Settings()
 store = Store(settings.db_path)
 retriever = Retriever(store, Embedder(settings))
 service = RAGService(retriever, ChatModel(settings), settings)
-app = FastAPI(title="Flipper Zero RAG", version="0.4.0", docs_url="/api/docs")
+app = FastAPI(title="Flipper Zero RAG", version="0.5.0", docs_url="/api/docs")
 
 
 class Query(BaseModel):
@@ -30,6 +31,7 @@ class Query(BaseModel):
                                          pattern=r"^v?[0-9]+\.[0-9]+(\.[0-9]+)?(-rc(\.[0-9]+)?)?$")
     version_policy: Literal["strict", "include-unversioned"] = "include-unversioned"
     rerank: bool = False
+    protocol: str | None = Field(default=None, max_length=120, pattern=r"^[a-zA-Z0-9_ /+.-]{1,120}$")
 
 
 @app.middleware("http")
@@ -69,17 +71,42 @@ def runs(limit: int = 30):
     return {"runs": store.source_runs(limit)}
 
 
+@app.get("/api/protocols")
+def protocols(family: str | None = None, q: str = Param(default="", max_length=200),
+              limit: int = Param(default=200, ge=1, le=250)):
+    try:
+        items = search_protocols(family=family, query=q, limit=limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"count": len(items), "families": sorted(FAMILIES), "protocols": items}
+
+
+@app.get("/api/protocols/{protocol_id}")
+def protocol_detail(protocol_id: str):
+    item = get_protocol(protocol_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Unknown protocol")
+    return item
+
+
+def _checked_protocol(req: Query) -> None:
+    if req.protocol and not get_protocol(req.protocol):
+        raise HTTPException(status_code=422, detail="Unknown or ambiguous protocol")
+
+
 @app.post("/api/search")
 def search(req: Query):
+    _checked_protocol(req)
     return retriever.search(req.query, req.top_k, req.category, req.mode, req.trust,
                             source_id=req.source_id, expand=req.expand,
                             firmware_version=req.firmware_version,
-                            version_policy=req.version_policy, rerank=req.rerank)
+                            version_policy=req.version_policy, rerank=req.rerank, protocol=req.protocol)
 
 
 @app.post("/api/ask")
 def ask(req: Query):
+    _checked_protocol(req)
     return service.ask(req.query, req.category, req.top_k, req.mode, req.trust,
                        source_id=req.source_id, expand=req.expand,
                        firmware_version=req.firmware_version,
-                       version_policy=req.version_policy, rerank=req.rerank)
+                       version_policy=req.version_policy, rerank=req.rerank, protocol=req.protocol)
