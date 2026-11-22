@@ -29,9 +29,10 @@ class RAGService:
 
     def ask(self, question: str, category: str | None = None,
             top_k: int | None = None, mode: str = "hybrid",
-            trust: str | None = None) -> dict:
+            trust: str | None = None, source_id: str | None = None,
+            expand: bool = True) -> dict:
         found = self.retriever.search(question, top_k or self.settings.top_k, category,
-                                      mode=mode, trust=trust)
+                                      mode=mode, trust=trust, source_id=source_id, expand=expand)
         hits = found["results"]
         if not hits:
             return {"answer": "No encuentro suficiente evidencia en el índice. Sincroniza las fuentes oficiales o cambia los filtros.",
@@ -63,7 +64,9 @@ class RAGService:
             cited = {int(x) for x in re.findall(r"\[(\d+)\]", answer)}
             bogus = [n for n in cited if n < 1 or n > len(included)]
             if bogus:
-                answer += "\n\nNota: el modelo generó alguna cita inexistente; contrasta la respuesta con las fuentes adjuntas."
+                for n in bogus:
+                    answer = answer.replace(f"[{n}]", "[cita no válida]")
+                answer += "\n\nNota: se han eliminado referencias inexistentes generadas por el modelo."
             elif not cited:
                 answer += "\n\nReferencias recuperadas: " + ", ".join(f"[{i}]" for i in range(1, min(len(included), 3) + 1))
             generated = True

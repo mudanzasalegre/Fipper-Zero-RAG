@@ -1,0 +1,13 @@
+{"question":"¿Para qué sirve uFBT al compilar aplicaciones FAP?","must_contain_url":"08-fap-ufbt.md","source_id":"starter"}
+{"question":"¿Qué es la API Furi del firmware?","must_contain_url":"09-furi-y-fbt.md","source_id":"starter"}
+{"question":"¿Cómo utiliza Flipper Zero NFC y RFID?","must_contain_url":"06-nfc-vs-rfid.md","source_id":"starter"}
+{"question":"¿Qué precauciones hay para usar señales Sub-GHz?","must_contain_url":"05-subghz-y-normativa.md","source_id":"starter"}
+{"question":"¿Cómo conectar módulos al puerto GPIO?","must_contain_url":"11-gpio-modulos.md","source_id":"starter"}
+{"question":"¿Cómo usar JS para hacer scripts?","must_contain_url":"10-javascript.md","source_id":"starter"}
+{"question":"¿Cómo actualizar el firmware y recuperarlo?","must_contain_url":"12-actualizaciones-y-recuperacion.md","source_id":"starter"}
+{"question":"¿Qué es el protocolo RPC protobuf?","must_contain_url":"13-rpc-protobuf-cli.md","source_id":"starter"}
+{"question":"¿Qué formatos .nfc .sub y .ir se guardan?","must_contain_url":"14-formatos-de-archivo.md","source_id":"starter"}
+{"question":"¿Qué es iButton y el infrarrojo?","must_contain_url":"07-infrarrojos-ibutton.md","source_id":"starter"}
+{"question":"¿Cuáles son las reglas de uso responsable y consentimiento?","must_contain_url":"03-buenas-practicas.md","source_id":"starter"}
+{"question":"¿Cómo funciona la tarjeta microSD?","must_contain_url":"04-hardware-y-almacenamiento.md","source_id":"starter"}
+{"question":"¿Qué implica la inteligencia de rinocerontes marcianos cristalinos?","should_abstain":true,"source_id":"starter"}

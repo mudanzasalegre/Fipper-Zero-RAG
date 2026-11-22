@@ -15,7 +15,7 @@ settings = Settings()
 store = Store(settings.db_path)
 retriever = Retriever(store, Embedder(settings))
 service = RAGService(retriever, ChatModel(settings), settings)
-app = FastAPI(title="Flipper Zero RAG", version="0.2.0", docs_url="/api/docs")
+app = FastAPI(title="Flipper Zero RAG", version="0.3.0", docs_url="/api/docs")
 
 
 class Query(BaseModel):
@@ -24,6 +24,8 @@ class Query(BaseModel):
     category: str | None = Field(default=None, max_length=80)
     mode: Literal["hybrid", "lexical", "semantic"] = "hybrid"
     trust: Literal["official", "community", "local"] | None = None
+    source_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9_-]{1,80}$")
+    expand: bool = True
 
 
 @app.middleware("http")
@@ -56,11 +58,18 @@ def stats():
     return store.stats()
 
 
+@app.get("/api/runs")
+def runs(limit: int = 30):
+    return {"runs": store.source_runs(limit)}
+
+
 @app.post("/api/search")
 def search(req: Query):
-    return retriever.search(req.query, req.top_k, req.category, req.mode, req.trust)
+    return retriever.search(req.query, req.top_k, req.category, req.mode, req.trust,
+                            source_id=req.source_id, expand=req.expand)
 
 
 @app.post("/api/ask")
 def ask(req: Query):
-    return service.ask(req.query, req.category, req.top_k, req.mode, req.trust)
+    return service.ask(req.query, req.category, req.top_k, req.mode, req.trust,
+                       source_id=req.source_id, expand=req.expand)

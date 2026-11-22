@@ -8,7 +8,7 @@
 
 ## Qué incluye
 
-- **Cobertura ampliada (v0.2)**: 27 páginas web semilla, 6 repositorios oficiales (firmware, catálogo, uFBT, Protobuf, qFlipper, ejemplos FAP) y 3 fuentes comunitarias opt-in. Ingesta real: páginas web seleccionadas y recorrido opcional de enlaces de `docs.flipper.net` y `developer.flipper.net`, repositorio de firmware oficial, catálogo de aplicaciones oficial y archivos locales.
+- **Cobertura ampliada (v0.3)**: 61 páginas web semilla, 6 repositorios oficiales (firmware, catálogo, uFBT, Protobuf, qFlipper, ejemplos FAP) y 3 fuentes comunitarias opt-in. Ingesta real: páginas web seleccionadas y recorrido opcional de enlaces de `docs.flipper.net` y `developer.flipper.net`, repositorio de firmware oficial, catálogo de aplicaciones oficial y archivos locales.
 - **Rastreabilidad**: URLs de fuentes originales, categorías, confianza (`official`/`community`/`local`), hashes, commit Git y líneas del código fuente.
 - **Búsqueda híbrida**: SQLite FTS5 (léxica/BM25) + embeddings Ollama (similitud coseno), fusionadas mediante Reciprocal Rank Fusion. Si falta Ollama, funciona el modo FTS5.
 - **Asistente local**: Ollama o servidor de chat compatible con OpenAI (llama.cpp, LM Studio o vLLM). Los embeddings también pueden usar una API OpenAI-compatible.
@@ -16,7 +16,9 @@
 - **Mantenimiento**: actualización incremental, recalculado de embeddings, diagnóstico, benchmark Recall@K/MRR, tests CI y Docker Compose.
 - **Uso responsable**: no extrae ni distribuye dumps de tarjetas, llaves privadas, señales grabadas u otros secretos. No permite ejecutar comandos desde la interfaz.
 
-**Ampliación 2026-11-22:** seis repositorios oficiales y tres comunitarios opcionales en el catálogo: firmware, Apps Catalog, uFBT, protobuf RPC y ejemplos good-faps. Se han añadido auditoría del índice, fuentes y pruebas, e ingesta local de `.proto`, `.fam`, `.js` y `.py`. Consulta [investigación](docs/RESEARCH_2026.md) y [fuentes](docs/SOURCES.md). El proyecto solo documenta, no ejecuta acciones sobre hardware.
+**Ampliación v0.2 (2026-11-22):** seis repositorios oficiales y tres comunitarios opcionales en el catálogo: firmware, Apps Catalog, uFBT, protobuf RPC y ejemplos good-faps. Se han añadido auditoría del índice, fuentes y pruebas, e ingesta local de `.proto`, `.fam`, `.js` y `.py`. Consulta [investigación](docs/RESEARCH_2026.md) y [fuentes](docs/SOURCES.md). El proyecto solo documenta, no ejecuta acciones sobre hardware.
+
+**Novedades v0.3 (2026-11-22):** catálogo de 61 semillas de documentación oficial (formatos NFC/RFID/IR/Sub-GHz, módulos JS, hardware, Devboard, Furi y depuración). Filtros aplicados **antes** de recuperar candidatos (fuente/categoría/confianza), reducción de coincidencias genéricas, expansión terminológica ES/EN verificable y registro de sincronizaciones. `ingest --prune` y `sync --prune` son opcionales y están protegidos contra escaneos parciales. PDF local opcional, indexado por página (`pip install -e '.[pdf]'`); sin OCR. Nueva evaluación offline reproducible de 12 preguntas técnicas y un control negativo, integrada en CI. Más información en [iteración v0.3](docs/ITERATION_V03.md).
 
 **Estado del contenido:** se incluyen 15 guías originales de conocimiento introductorio redactadas para este proyecto. La documentación ajena no está empaquetada ni preindexada. La ingesta de fuentes oficiales debe ejecutarse explícitamente; al hacerlo se descargarán y crearán los índices locales.
 
@@ -36,6 +38,7 @@ python -m pip install -e ".[dev]"
 # Primeros documentos locales (no necesita Ollama):
 flipper-rag ingest --path knowledge/starter
 flipper-rag stats
+flipper-rag runs # historial de sincronizaciones
 flipper-rag audit # Comprueba que las fuentes y el índice sean coherentes
 
 # Interfaz
@@ -131,6 +134,8 @@ Abre **http://localhost:8000**. El primer arranque y las inferencias en CPU depe
 |---|---|
 | `flipper-rag ingest --path knowledge/starter` | Indexar notas locales |
 | `flipper-rag ingest --path /ruta/a/docs --source-id mis-notas` | Añadir documentación propia |
+| `flipper-rag ingest --path ./manuales --pdf` | Indexar PDFs locales con capa de texto y referencias `#page=N` (extra `pdf`) |
+| `flipper-rag ingest --path ./manuales --source-id manuales --prune` | Eliminar archivos retirados de ese corpus (explícito) |
 | `flipper-rag sync --web` | Obtener páginas oficiales seleccionadas |
 | `flipper-rag sync --web --crawl --max-pages 250 --depth 2` | Recorrer enlaces internos oficiales (limitado) |
 | `flipper-rag sync --firmware` | Clonar y indexar documentación del firmware |
@@ -140,6 +145,8 @@ Abre **http://localhost:8000**. El primer arranque y las inferencias en CPU depe
 | `flipper-rag sync --community` | Opt-in: documentación comunitaria distinta de fuentes oficiales |
 | `flipper-rag sync --firmware --with-code` | Incluir cabeceras/C y documentación |
 | `flipper-rag sync --all --force` | Reindexar incluso documentos no modificados |
+| `flipper-rag sync --firmware --prune` | Quitar entradas Git que ya no están en la selección, solo si el escaneo fue completo |
+| `flipper-rag runs --limit 20` | Historial por fuente: documentos, fallos, fecha, estado |
 | `flipper-rag reembed` | Completar/reparar embeddings |
 | `flipper-rag search "pregunta"` | Inspeccionar fragmentos sin LLM |
 | `flipper-rag ask "pregunta"` | Consultar el RAG con citas |
@@ -147,9 +154,12 @@ Abre **http://localhost:8000**. El primer arranque y las inferencias en CPU depe
 | `flipper-rag sources` | Validar catálogo y mostrar procedencia de fuentes |
 | `flipper-rag doctor` | Diagnóstico de dependencias locales |
 | `flipper-rag search "FAP" --mode lexical --trust official` | Filtrar por modo y origen |
-| `flipper-rag eval --file benchmarks/questions.jsonl` | Medir Recall@k y MRR (tras ingestar fuentes) |
+| `flipper-rag search "GPIO" --category gpio --source-id web-oficial` | Filtrar por categoría y fuente en SQL |
+| `flipper-rag search "tarjeta sd" --no-expand` | Desactivar expansión de términos para comparación |
+| `flipper-rag eval --file benchmarks/questions.jsonl` | Medir Recall@k y MRR tras ingestar fuentes |
+| `flipper-rag eval --file benchmarks/offline.jsonl --mode lexical` | Benchmark offline de recuperación con 15 notas (requiere `--source-id starter` al ingestar) |
 
-**Nota sobre actualizaciones:** se actualizan los archivos cambiados o con revisión Git nueva. El índice no elimina por defecto documentos desaparecidos, por seguridad ante descargas parciales. Para crear un índice completamente limpio, elimina `data/flipper_rag.sqlite3` con la aplicación cerrada y repite la ingesta. `--with-code` aumenta el volumen: cambia `max_files` en `sources.json` si es necesario.
+**Nota sobre actualizaciones:** se actualizan los documentos modificados y se registra cada ejecución. **No se borra contenido automáticamente.** `--prune` es una operación explícita: en Git solo se aplica cuando la lectura finaliza sin errores y no alcanza el tope de archivos; no borra páginas web, porque el rastreador puede quedarse sin cobertura por red o límites. Si usas `sync --prune` sin `--with-code`, puedes eliminar archivos de código indexados en una ejecución anterior de esa misma fuente. Para reconstruir desde cero, haz una copia de seguridad y elimina `data/flipper_rag.sqlite3` con la aplicación parada.
 
 ## Arquitectura
 
@@ -179,7 +189,7 @@ flipperzero-rag/
 │   ├── retrieval.py    # fusión de ranking
 │   ├── models.py       # Ollama / API chat compatible
 │   └── service.py      # contexto, respuesta y citas
-├── sources.json        # 27 semillas web y 9 repos Git verificados
+├── sources.json        # 61 semillas web y 9 repos Git permitidos
 ├── knowledge/starter/  # 15 guías originales para demo offline
 ├── tests/              # pruebas automáticas
 ├── benchmarks/         # preguntas para evaluación
@@ -193,8 +203,8 @@ flipperzero-rag/
 - **Local por defecto.** SQLite y el material clonado se almacenan en `data/`, excluido de Git. El proyecto no incluye autenticación: **no publiques Uvicorn en `0.0.0.0` fuera de redes controladas** ni abras los puertos sin autenticación/TLS.
 - **Fidelidad de las citas.** Los enlaces Git corresponden a un commit concreto y un rango de líneas. Los documentos web enlazan a la página de origen, pero su contenido puede cambiar con el tiempo. El LLM puede citar mal: revisa los enlaces en tareas críticas.
 - **Legal y licencias.** El firmware oficial tiene licencia **GPL-3.0**; el contenido de otras fuentes puede tener licencias distintas. Este repositorio MIT contiene código propio y notas propias; **no redistribuye copias de documentación o código de terceros**. Una base de datos derivada o sus redistribuciones requieren revisión de términos y atribuciones.
-- **Rendimiento.** Los vectores están guardados como JSON en SQLite y la búsqueda semántica es de fuerza bruta. Adecuado para prototipos/corpus medianos; para cientos de miles de fragmentos conviene pgvector/Qdrant/FAISS. No incorpora reranking neuronal ni OCR/PDF.
-- **Fuentes y web.** La extracción HTML es conservadora, valida el dominio y consulta robots.txt. Puede fallar ante cambios del sitio o contenido renderizado por JS. Comprueba siempre `stats` después de sincronizar.
+- **Rendimiento.** Los filtros de fuente, categoría y confianza se ejecutan en SQL antes del ranking, con términos de búsqueda técnica y expansión ES/EN. Los vectores están guardados como JSON en SQLite y la búsqueda semántica es de fuerza bruta. Adecuado para prototipos/corpus medianos; para cientos de miles de fragmentos conviene pgvector/Qdrant/FAISS. No incorpora reranking neuronal ni OCR/PDF.
+- **Fuentes y web.** La extracción HTML es conservadora, valida el dominio, bloquea redirecciones a otros hosts y consulta robots.txt. Puede fallar ante cambios del sitio o contenido renderizado por JS. Comprueba siempre `stats` después de sincronizar.
 - **Seguridad.** El prompt delimita el contenido indexado como datos no confiables, pero ningún prompt elimina por completo los riesgos de prompt injection. No uses este servicio para accionar hardware sin validar explícitamente los comandos. Ver `docs/SECURITY.md`.
 
 ## Pruebas y control de calidad
@@ -205,7 +215,7 @@ python -m compileall -q src
 flipper-rag eval --file benchmarks/questions.jsonl
 ```
 
-El conjunto de evaluación es intencionadamente pequeño y orientativo: **no garantiza exactitud factual de las respuestas**. Se recomienda ampliar las preguntas con versiones de firmware, APIs y tareas reales.
+El conjunto de evaluación es intencionadamente pequeño y orientativo: **no garantiza exactitud factual de las respuestas**. El benchmark offline (`benchmarks/offline.jsonl`) usa 12 preguntas positivas y 1 negativa sobre las notas de demostración, mientras el benchmark oficial (`benchmarks/questions.jsonl`) requiere ejecutar la sincronización y se mide separadamente. Se recomienda ampliar las preguntas con versiones de firmware, APIs y tareas reales.
 
 ## Licencia
 

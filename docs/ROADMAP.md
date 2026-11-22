@@ -7,6 +7,13 @@
 - Búsqueda híbrida configurable, API, interfaz, pruebas y guías.
 - Diagnóstico, evaluaciones Recall@K/MRR y corpus local inicial.
 
+## 0.3 — calidad de recuperación y gestión del corpus
+
+- 61 semillas oficiales verificadas, incluidos módulos JS, formato de archivos y Devboard.
+- Filtros fuente/categoría/confianza en SQL, expansión ES/EN y umbral léxico para evitar coincidencias triviales.
+- Estado de sincronizaciones, limpieza incremental opt-in con protecciones y referencias a PDF local por página.
+- Benchmark offline reproducible (12 preguntas técnicas + control negativo) en CI.
+
 ## Próximas mejoras sugeridas
 
 - Conector ANN opcional (Qdrant/sqlite-vec) para índices grandes.

@@ -36,3 +36,18 @@ SQLite FTS5 es eficiente para recuperación textual. En esta versión la similit
 ## Seguridad
 
 La recuperación documental no autoriza acciones sobre hardware real; no hay herramientas de ejecución autónoma ni control del Flipper conectado. El corpus es input no confiable; el prompt de sistema contiene mitigación de prompt injection, pero no ofrece garantías formales contra todas las manipulaciones.
+
+## Evaluación sin red ni modelos (v0.3)
+
+```bash
+# Linux/macOS; PowerShell: $env:RAG_EMBED_PROVIDER='none'
+export RAG_EMBED_PROVIDER=none
+export RAG_CHAT_PROVIDER=none
+export RAG_DB_PATH=./data/flipper_rag.sqlite3
+flipper-rag ingest --path knowledge/starter --source-id starter
+flipper-rag eval --file benchmarks/offline.jsonl --mode lexical --top-k 6 --min-recall 0.85 --json-output data/eval-offline.json
+```
+
+El benchmark offline contiene 12 preguntas con una URL local esperada y una pregunta deliberadamente ajena al corpus (`should_abstain`). Reporta Recall@k, MRR, tasa de abstención y cada posición. El benchmark no mide la fidelidad generativa del LLM ni se debe extrapolar a la documentación oficial completa.
+
+Los filtros `--category`, `--source-id` y `--trust` se aplican **antes de limitar candidatos** en FTS5 y en la búsqueda semántica. La expansión terminológica español-inglés es una segunda recuperación de menor peso (consultable con `--no-expand`). Se conservan las señales de recuperación para inspección.

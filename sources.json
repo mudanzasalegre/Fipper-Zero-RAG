@@ -141,9 +141,169 @@
       "title": "Flipper Build Tool"
     },
     {
-      "url": "https://developer.flipper.net/flipperzero/doxygen/applications_on_sd_card.html",
+      "url": "https://developer.flipper.net/flipperzero/doxygen/example_thermo.html",
+      "category": "hardware",
+      "title": "Ejemplo termómetro DS18B20"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/dev_board_fw_update.html",
+      "category": "devboard",
+      "title": "Actualización Wi-Fi Devboard"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/dev_board_reading_logs.html",
+      "category": "debug",
+      "title": "Logs por Devboard"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/dev_board_get_started.html",
+      "category": "devboard",
+      "title": "Inicio con Wi-Fi Devboard"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/expansion_protocol.html",
+      "category": "expansion",
+      "title": "Protocolo de módulos de expansión"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/badusb_file_format.html",
+      "category": "fileformats",
+      "title": "Formato BadUSB"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+      "category": "fileformats",
+      "title": "Formato iButton"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+      "category": "fileformats",
+      "title": "Formato infrarrojos"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/lfrfid_file_format.html",
+      "category": "fileformats",
+      "title": "Formato RFID LF"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+      "category": "fileformats",
+      "title": "Formato NFC"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/subghz_file_format.html",
+      "category": "fileformats",
+      "title": "Formato SubGHz"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_about_js_engine.html",
+      "category": "javascript",
+      "title": "Motor JavaScript"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_badusb.html",
+      "category": "javascript",
+      "title": "Módulo JavaScript BadUSB"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_event_loop.html",
+      "category": "javascript",
+      "title": "Módulo JS EventLoop"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_flipper.html",
+      "category": "javascript",
+      "title": "Módulo JS Flipper"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_gpio.html",
+      "category": "javascript",
+      "title": "Módulo JavaScript GPIO"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_storage.html",
+      "category": "javascript",
+      "title": "Módulo JavaScript Storage"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_your_first_js_app.html",
+      "category": "javascript",
+      "title": "Primera aplicación JavaScript"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_developing_apps_using_js_sdk.html",
+      "category": "javascript",
+      "title": "SDK JavaScript TypeScript"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_gui__byte_input.html",
+      "category": "javascript",
+      "title": "GUI entrada de bytes"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_gui__submenu.html",
+      "category": "javascript",
+      "title": "GUI submenú"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_math.html",
+      "category": "javascript",
+      "title": "Módulo JavaScript Math"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_notification.html",
+      "category": "javascript",
+      "title": "Módulo JavaScript Notification"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_serial.html",
+      "category": "javascript",
+      "title": "Módulo JavaScript Serial"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_data_types.html",
+      "category": "javascript",
+      "title": "Tipos de datos JS"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/js_builtin.html",
+      "category": "javascript",
+      "title": "Funciones integradas JS"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/unit_tests.html",
       "category": "development",
-      "title": "FAP and apps on SD card"
+      "title": "Pruebas unitarias del firmware"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/furi_hal_bus.html",
+      "category": "furi",
+      "title": "API FuriHalBus"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/furi_check.html",
+      "category": "furi",
+      "title": "Chequeos y fallos de Furi"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/furi_hal_debugging.html",
+      "category": "debug",
+      "title": "Depuración Furi HAL"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/firmware_assets.html",
+      "category": "development",
+      "title": "Assets del firmware"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/dolphin_assets.html",
+      "category": "development",
+      "title": "Assets del delfín"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/ota_updates.html",
+      "category": "firmware",
+      "title": "Proceso de actualización OTA"
     }
   ],
   "git": [

@@ -16,7 +16,7 @@ El catálogo de aplicaciones **no contiene necesariamente el código fuente de t
 
 - URL web: solo HTTPS de `docs.flipper.net` o `developer.flipper.net`; se verifica robots.txt, tamaño máximo 2 MB y respuesta HTML.
 - Git: solo las rutas glob de `sources.json`, con límite por fichero 128 kB y máximo por repositorio (`max_files`). Se evita indexar binarios y archivos con codificación no UTF-8.
-- Archivos locales: `.md`, `.txt`, `.rst`, `.c`, `.h`, `.json`; excluye por defecto carpetas distintas de las indicadas por el usuario.
+- Archivos locales: Markdown, texto, C/C++, Python, JS/TS, Proto, FAM, JSON/YAML, TOML, CSV; PDFs locales opcionales mediante `--pdf` y el extra `[pdf]`. Cada página con capa de texto se cita con `#page=N`; no hay OCR.
 - Cada documento conserva `source_id`, `title`, `url`, `category`, `revision`, `license`, hash de contenido y fecha de indexación.
 - Las fuentes remotas no se distribuyen en este proyecto; si se publica o comparte la base derivada, revisar individualmente permisos, licencias y marcas.
 - No añadir dumps de tarjetas, códigos de acceso, credenciales, capturas radio privadas, claves API ni información identificativa.
@@ -38,3 +38,9 @@ El catálogo de aplicaciones **no contiene necesariamente el código fuente de t
 | Official Good FAPs | https://github.com/flipperdevices/flipperzero-good-faps | Ejemplos C, H, JS, `application.fam` |
 
 El catálogo es editable. La ingesta Git está deliberadamente restringida a la organización oficial `flipperdevices` y a HTTPS; revisar derechos antes de expandir a terceros.
+
+## Ampliación v0.3 — corpus curado
+
+Se verificaron páginas de `developer.flipper.net` sobre formatos (`nfc_file_format.html`, `lfrfid_file_format.html`, `subghz_file_format.html`, `infrared_file_format.html`, `badusb_file_format.html`, `ibutton_file_format.html`), JavaScript (`js_gpio.html`, `js_storage.html`, `js_event_loop.html`, `js_serial.html`, `js_builtin.html`), módulos de expansión y Wi-Fi Devboard. El catálogo contiene **61 URLs oficiales** y **9 repositorios Git** (6 oficiales, 3 comunitarios opt-in). Las 61 URLs son *semillas configuradas*, no equivalen a páginas ya descargadas.
+
+La ingesta web usa robots.txt y solo dominios HTTPS oficiales; no sigue redirecciones a otros hosts. La ingesta Git registra el commit original. Las fuentes comunitarias no se presentan como firmware soportado oficialmente. Utiliza `flipper-rag runs`, `audit` y `stats` para comprobar qué contenido se ha indexado realmente.

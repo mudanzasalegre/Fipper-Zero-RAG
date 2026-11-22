@@ -56,6 +56,7 @@ class Store:
                     license TEXT NOT NULL, trust TEXT NOT NULL DEFAULT 'official', content_sha TEXT NOT NULL, indexed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
                 );
                 CREATE INDEX IF NOT EXISTS idx_doc_source ON documents(source_id);
+                CREATE INDEX IF NOT EXISTS idx_doc_category_trust ON documents(category,trust);
                 CREATE TABLE IF NOT EXISTS chunks (
                     id TEXT PRIMARY KEY, doc_id TEXT NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
                     ordinal INTEGER NOT NULL, heading TEXT NOT NULL, content TEXT NOT NULL,
@@ -66,6 +67,18 @@ class Store:
                 CREATE VIRTUAL TABLE IF NOT EXISTS chunks_fts USING fts5(
                     title, body, chunk_id UNINDEXED, tokenize='unicode61 remove_diacritics 2'
                 );
+                CREATE TABLE IF NOT EXISTS sync_runs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    source_id TEXT NOT NULL,
+                    finished_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    seen INTEGER NOT NULL DEFAULT 0,
+                    added INTEGER NOT NULL DEFAULT 0,
+                    updated INTEGER NOT NULL DEFAULT 0,
+                    removed INTEGER NOT NULL DEFAULT 0,
+                    failed INTEGER NOT NULL DEFAULT 0,
+                    status TEXT NOT NULL CHECK(status IN ('ok', 'partial', 'error'))
+                );
+                CREATE INDEX IF NOT EXISTS idx_runs_source ON sync_runs(source_id, id DESC);
             """)
             # Migration for databases created by the v0.1 prototype.
             cols = {row[1] for row in c.execute("PRAGMA table_info(documents)")}
@@ -126,16 +139,51 @@ class Store:
                         and row["revision"] == doc.revision
                         and all(row[k] == getattr(doc,k) for k in ("url","category","title","trust","license")))
 
-    def lexical(self, query: str, limit: int = 60) -> list[str]:
+    @staticmethod
+    def _filter_clause(category: str | None, trust: str | None, source_id: str | None) -> tuple[str, list[str]]:
+        filters, args = [], []
+        for field, value in (("category", category), ("trust", trust), ("source_id", source_id)):
+            if value:
+                filters.append(f"d.{field}=?")
+                args.append(value)
+        return "".join(" AND " + clause for clause in filters), args
+
+    def lexical(self, query: str, limit: int = 60, *, category: str | None = None,
+                trust: str | None = None, source_id: str | None = None) -> list[str]:
         import re
-        tokens = re.findall(r"[^\W_][\w-]*", query, re.UNICODE)[:15]
+        # FTS5 parameter binding prevents MATCH operator injection. Keep C symbols,
+        # snake_case, and accented words intact for exact technical searches.
+        stopwords = {"que", "qué", "como", "cómo", "cual", "cuál", "cuales", "cuáles",
+                     "el", "la", "los", "las", "lo", "de", "del", "y", "o", "a",
+                     "en", "para", "por", "con", "sin", "sobre", "se", "su", "un", "una",
+                     "es", "son", "está", "esta", "funciona", "funcionan", "funcionar",
+                     "usar", "hacer", "hay", "the", "what", "how", "is", "are", "to",
+                     "for", "and", "in", "of", "does", "do", "with", "from", "can",
+                     "my", "me", "i", "it", "on", "al", "le", "puedo", "puede",
+                     "flipper", "zero", "implica", "implicar", "reglas", "sirve", "tipos"}
+        tokens = [word for word in re.findall(r"[^\W_][\w-]*", query, re.UNICODE)
+                  if len(word) > 1 and word.casefold() not in stopwords][:16]
         if not tokens:
             return []
         fts_query = " OR ".join('"' + t.replace('"', '""') + '"' for t in tokens)
+        extra, params = self._filter_clause(category, trust, source_id)
         with self.connect() as c:
-            rows = c.execute("""SELECT chunk_id FROM chunks_fts
-                                WHERE chunks_fts MATCH ? ORDER BY bm25(chunks_fts, 2.8, 1.0) LIMIT ?""",
-                             (fts_query, limit)).fetchall()
+            rows = c.execute("""SELECT chunks_fts.chunk_id, chunks_fts.title, chunks_fts.body FROM chunks_fts
+                JOIN chunks c ON c.id=chunks_fts.chunk_id
+                JOIN documents d ON d.id=c.doc_id
+                WHERE chunks_fts MATCH ?""" + extra + """
+                ORDER BY bm25(chunks_fts, 3.0, 1.0) LIMIT ?""",
+                (fts_query, *params, max(1, min(limit, 500)))).fetchall()
+        # Require more than a single coincidental generic word when the user
+        # supplied a multi-concept question. This reduces unsupported answers.
+        # Match only on the same chunk (not on unrelated text in a document).
+        if len(set(tokens)) >= 3:
+            import unicodedata
+            def fold(value):
+                value = unicodedata.normalize("NFKD", value.casefold())
+                return "".join(char for char in value if not unicodedata.combining(char))
+            needle = [fold(t) for t in dict.fromkeys(tokens)]
+            rows = [r for r in rows if sum(t in fold(r[1] + " " + r[2]) for t in needle) >= 2]
         return [r[0] for r in rows]
 
     def embedded_rows(self, model: str):
@@ -143,10 +191,15 @@ class Store:
             return [(r["id"], json.loads(r["embedding"])) for r in c.execute(
                 "SELECT id,embedding FROM chunks WHERE embedding IS NOT NULL AND embedding_model=?", (model,))]
 
-    def iter_embeddings(self, model: str):
-        """Stream vector rows instead of materializing the full embedding corpus."""
+    def iter_embeddings(self, model: str, *, category: str | None = None,
+                        trust: str | None = None, source_id: str | None = None):
+        """Stream only relevant vectors for the requested filters."""
+        extra, params = self._filter_clause(category, trust, source_id)
         with self.connect() as c:
-            for r in c.execute("SELECT id,embedding FROM chunks WHERE embedding IS NOT NULL AND embedding_model=?", (model,)):
+            for r in c.execute("""SELECT c.id,c.embedding FROM chunks c
+                JOIN documents d ON d.id=c.doc_id
+                WHERE c.embedding IS NOT NULL AND c.embedding_model=?""" + extra,
+                (model, *params)):
                 try:
                     vector = json.loads(r["embedding"])
                 except (TypeError, ValueError):
@@ -172,7 +225,7 @@ class Store:
         marks = ",".join("?" for _ in ids)
         with self.connect() as c:
             rows = c.execute(f"""SELECT c.id,c.content,c.heading,c.line_start,c.line_end,
-                 d.title,d.url,d.category,d.source_id,d.revision,d.license,d.trust
+                 d.title,d.url,d.category,d.source_id,d.revision,d.license,d.trust,d.indexed_at,c.doc_id
                  FROM chunks c JOIN documents d ON c.doc_id=d.id
                  WHERE c.id IN ({marks})""", tuple(ids)).fetchall()
         return {r["id"]: dict(r) for r in rows}
@@ -184,4 +237,22 @@ class Store:
             emb = c.execute("SELECT COUNT(*) FROM chunks WHERE embedding IS NOT NULL").fetchone()[0]
             sources = [dict(r) for r in c.execute("""SELECT source_id, category, COUNT(*) AS documents
                             FROM documents GROUP BY source_id,category ORDER BY source_id""")]
-        return {"documents": d, "chunks": ch, "embedded_chunks": emb, "sources": sources}
+        return {"documents": d, "chunks": ch, "embedded_chunks": emb,
+                "embedding_coverage": round(emb / ch, 4) if ch else 0,
+                "sources": sources}
+
+    def record_sync(self, source_id: str, result: dict, *, removed: int = 0) -> None:
+        status = "error" if result.get("error") else (
+            "partial" if (result.get("failed", 0) or result.get("web_fetch_failed", 0)
+                          or result.get("crawl_limit_reached", False)) else "ok")
+        with self.connect() as c:
+            c.execute("""INSERT INTO sync_runs(source_id, seen, added, updated, removed, failed, status)
+                         VALUES(?,?,?,?,?,?,?)""", (source_id, result.get("documents_seen", 0),
+                            result.get("added", 0), result.get("updated", 0), removed,
+                            result.get("failed", 0) + result.get("web_fetch_failed", 0)
+                            + int(bool(result.get("error"))), status))
+
+    def source_runs(self, limit: int = 30) -> list[dict]:
+        with self.connect() as c:
+            return [dict(r) for r in c.execute("""SELECT source_id,finished_at,seen,added,updated,removed,failed,status
+                       FROM sync_runs ORDER BY id DESC LIMIT ?""", (max(1, min(limit, 200)),))]

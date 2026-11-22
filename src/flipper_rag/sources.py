@@ -15,7 +15,7 @@ from .chunking import chunk_text
 from .models import Embedder, ModelUnavailable
 from .storage import Document, Store, document_id
 
-USER_AGENT = "FlipperZeroRAG/0.1 (local documentation indexing)"
+USER_AGENT = "FlipperZeroRAG/0.3 (local educational documentation indexing)"
 ALLOWED_DOC_HOSTS = {"docs.flipper.net", "developer.flipper.net"}
 # Explicitly reviewed upstream repositories. Users must opt into community firmware.
 ALLOWED_GIT_REPOS = {
@@ -25,70 +25,103 @@ ALLOWED_GIT_REPOS = {
     "djsime1/awesome-flipperzero", "darkflippers/unleashed-firmware",
     "next-flip/momentum-firmware",
 }
-SUPPORTED_LOCAL_SUFFIXES = {".md", ".txt", ".rst", ".c", ".h", ".cpp", ".py", ".js", ".ts", ".json", ".yaml", ".yml", ".proto", ".fam"}
+SUPPORTED_LOCAL_SUFFIXES = {".md", ".txt", ".rst", ".c", ".h", ".cpp", ".hpp", ".py", ".js", ".ts", ".json", ".yaml", ".yml", ".proto", ".fam", ".toml", ".ini", ".csv"}
 BLOCKED_NAME_PARTS = {".git", ".venv", "node_modules", "__pycache__", "secrets", "credentials", "private_keys", "dumps", "captures", "backups", "private", "keyfiles"}
 
 
 class TextHTMLParser(HTMLParser):
+    """Lightweight HTML-to-text extraction with nested boilerplate exclusion.
+
+    HTML void tags have no closing tag; treating them as a normal start tag can
+    break skip-depth accounting and leak scripts or navigation into the corpus.
+    """
+
     EXCLUDE = {"script", "style", "noscript", "svg", "nav", "footer", "header", "aside", "button"}
+    VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
+
     def __init__(self):
         super().__init__(convert_charrefs=True)
-        self.skipped: list[str] = []
         self._skip_depth = 0
-        self.heading = None
+        self._pre_depth = 0
         self.out: list[str] = []
         self.title = ""
         self.in_title = False
         self.links: list[str] = []
 
     def handle_starttag(self, tag, attrs):
+        tag = tag.lower()
+        # Links discovered from navigations are useful for the official crawler.
         if tag == "a":
             href = dict(attrs).get("href")
             if href:
                 self.links.append(href)
         if self._skip_depth:
-            self._skip_depth += 1
+            if tag not in self.VOID:
+                self._skip_depth += 1
             return
         if tag in self.EXCLUDE:
             self._skip_depth = 1
             return
         if tag == "title":
             self.in_title = True
+        if tag == "pre":
+            self._pre_depth += 1
         if re.fullmatch(r"h[1-6]", tag):
-            self.heading = int(tag[1])
-            self.out.append("\n" + "#" * self.heading + " ")
-        elif tag in {"p", "li", "div", "pre", "section", "article", "br", "tr"}:
+            self.out.append("\n" + "#" * int(tag[1]) + " ")
+        elif tag in {"p", "li", "div", "pre", "section", "article", "br", "tr", "td"}:
             self.out.append("\n")
 
+    def handle_startendtag(self, tag, attrs):
+        self.handle_starttag(tag, attrs)
+        if tag.lower() not in self.VOID:
+            self.handle_endtag(tag)
+
     def handle_endtag(self, tag):
+        tag = tag.lower()
         if self._skip_depth:
-            self._skip_depth -= 1
+            if tag not in self.VOID:
+                self._skip_depth -= 1
             return
         if tag == "title":
             self.in_title = False
-        if re.fullmatch(r"h[1-6]", tag):
+        if tag == "pre":
+            self._pre_depth = max(0, self._pre_depth - 1)
+        if re.fullmatch(r"h[1-6]", tag) or tag in {"pre", "p", "li", "tr"}:
             self.out.append("\n")
-            self.heading = None
 
     def handle_data(self, data):
         if self._skip_depth:
             return
         if self.in_title:
             self.title += data
-        text = re.sub(r"[ \t\f\v]+", " ", data)
-        if text.strip():
-            self.out.append(text)
+            return
+        if self._pre_depth:
+            if data.strip():
+                self.out.append(data)
+        else:
+            text = re.sub(r"[ \t\f\v]+", " ", data)
+            if text.strip():
+                self.out.append(text)
 
     def text(self) -> str:
         raw = "".join(self.out)
-        lines = [re.sub(r"\s+", " ", line).strip() for line in raw.splitlines()]
-        result = []
+        lines = [re.sub(r"[ \t]+", " ", line).strip() for line in raw.splitlines()]
+        result: list[str] = []
         previous = ""
         for line in lines:
             if line and line != previous:
                 result.append(line)
                 previous = line
         return "\n".join(result)
+
+
+class _SameHostRedirectHandler(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        old_host = urllib.parse.urlsplit(req.full_url).hostname
+        target = urllib.parse.urlsplit(newurl)
+        if target.scheme != "https" or target.hostname != old_host:
+            raise ValueError("Cross-host or non-HTTPS documentation redirect blocked")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
 def read_web(url: str, robot_cache: dict) -> tuple[str, str, list[str]]:
@@ -108,7 +141,7 @@ def read_web(url: str, robot_cache: dict) -> tuple[str, str, list[str]]:
         raise PermissionError("Robots.txt disallows fetching " + url)
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT,
                                               "Accept": "text/html"})
-    with urllib.request.urlopen(req, timeout=25) as res:
+    with urllib.request.build_opener(_SameHostRedirectHandler()).open(req, timeout=25) as res:
         final = urllib.parse.urlparse(res.geturl())
         if final.hostname not in ALLOWED_DOC_HOSTS:
             raise ValueError("Redirected outside official domains")
@@ -142,12 +175,14 @@ def load_catalog(path: Path) -> dict:
 
 
 def index_documents(store: Store, docs: Iterable[Document], embedder: Embedder,
-                    *, force: bool = False) -> dict:
+                    *, force: bool = False, seen_ids: set[str] | None = None) -> dict:
     count = {"added": 0, "updated": 0, "unchanged": 0, "failed": 0,
              "not_embedded": 0, "documents_seen": 0}
     embeddings_ok = embedder.active
     for doc in docs:
         count["documents_seen"] += 1
+        if seen_ids is not None:
+            seen_ids.add(doc.doc_id)
         try:
             if store.has_current(doc, force=force):
                 count["unchanged"] += 1
@@ -195,13 +230,15 @@ def _canonical_doc_link(base_url: str, href: str) -> str | None:
 
 
 def web_documents(catalog: dict, delay: float = 0.5, *, crawl: bool = False,
-                  max_pages: int = 250, max_depth: int = 2):
+                  max_pages: int = 250, max_depth: int = 2,
+                  report: dict | None = None):
     robots: dict = {}
     seeds = [(item["url"], item.get("title", ""), item.get("category", "manual"), 0)
              for item in catalog["web"]]
     todo = deque(seeds)
     seen: set[str] = set()
     success = 0
+    failures = 0
     while todo and len(seen) < max_pages:
         url, name, category, depth = todo.popleft()
         url = _canonical_doc_link(url, url)
@@ -221,9 +258,13 @@ def web_documents(catalog: dict, delay: float = 0.5, *, crawl: bool = False,
                         guessed_category = (urllib.parse.urlsplit(child).path.split("/")[2:3] or ["manual"])[0]
                         todo.append((child, "", guessed_category, depth + 1))
         except Exception as exc:
+            failures += 1
             print(f"[WARN] Web fetch failed {url}: {exc}")
         time.sleep(max(0, delay))
-    print(f"Web pages retrieved: {success}/{len(seen)}, max_pages={max_pages}, depth={max_depth}, crawl={crawl}")
+    if report is not None:
+        report.update({"web_pages_seen": len(seen), "web_pages_retrieved": success,
+                       "web_fetch_failed": failures, "crawl_limit_reached": bool(todo)})
+    print(f"Web pages retrieved: {success}/{len(seen)}, failed={failures}, max_pages={max_pages}, depth={max_depth}, crawl={crawl}")
 
 
 def _git(cmd: list[str], cwd: Path | None = None) -> str:
@@ -303,16 +344,50 @@ def git_documents(spec: dict, cache: Path, *, include_code=False):
     print(f"Git {spec['id']}: {count} files indexed from {commit[:12]}")
 
 
-def local_documents(root: Path, *, source_id="local", category="notas"):
+def local_documents(root: Path, *, source_id="local", category="notas", include_pdf: bool = False):
+    """Enumerate eligible local documents; optionally extract PDFs page by page.
+
+    PDFs are deliberately opt-in. One document per page preserves meaningful
+    page-level citation targets (file:///path/document.pdf#page=N). Scanned PDFs
+    without a text layer are skipped; OCR is not attempted.
+    """
     root = root.resolve()
+    if not root.is_dir():
+        raise NotADirectoryError(f"Local corpus directory does not exist: {root}")
     for p in sorted(root.rglob("*")):
-        if not p.is_file() or p.is_symlink() or p.suffix.lower() not in SUPPORTED_LOCAL_SUFFIXES:
+        if not p.is_file() or p.is_symlink():
             continue
-        if any(part.lower() in BLOCKED_NAME_PARTS or part.startswith(".") for part in p.relative_to(root).parts):
+        rel_parts = p.relative_to(root).parts
+        if any(part.lower() in BLOCKED_NAME_PARTS or part.startswith(".") for part in rel_parts):
             continue
-        if p.stat().st_size > 128_000 or p.stat().st_size == 0:
+        size = p.stat().st_size
+        if size <= 0:
             continue
         rel = p.relative_to(root).as_posix()
+        if include_pdf and p.suffix.lower() == ".pdf" and size <= 20_000_000:
+            try:
+                from pypdf import PdfReader
+            except ImportError as exc:
+                raise RuntimeError("PDF support requires: pip install -e '.[pdf]'") from exc
+            try:
+                reader = PdfReader(str(p), strict=False)
+                if reader.is_encrypted:
+                    continue
+                for page_number, page in enumerate(reader.pages[:300], 1):
+                    body = (page.extract_text(extraction_mode="layout") or "").strip()
+                    if len(body) < 30:
+                        continue
+                    path = f"{rel}#page={page_number}"
+                    yield Document(doc_id=document_id(source_id, path), source_id=source_id,
+                                   title=f"{rel} (página {page_number})",
+                                   url=p.as_uri() + f"#page={page_number}", category=category,
+                                   body=body, license="User-provided local PDF", trust="local")
+            except (OSError, ValueError, KeyError) as exc:
+                print(f"[WARN] PDF could not be extracted: {rel}: {exc}")
+            continue
+        if p.suffix.lower() not in SUPPORTED_LOCAL_SUFFIXES or size > 128_000:
+            continue
         yield Document(doc_id=document_id(source_id, rel), source_id=source_id,
-                       title=rel, url=p.as_uri(), category=category, body=p.read_text("utf-8", "replace"),
+                       title=rel, url=p.as_uri(), category=category,
+                       body=p.read_text("utf-8", "replace"),
                        license="User-provided local document", trust="local")

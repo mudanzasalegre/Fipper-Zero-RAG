@@ -95,7 +95,7 @@ def test_citations_are_not_fabricated_by_service(tmp_path):
             assert 'Furi Core APIs' in prompt
             return 'El contexto habla de Furi [99].'
     data = RAGService(Retriever(db, OfflineEmbedder(Settings())), BadModel(Settings()), Settings()).ask('Furi')
-    assert 'cita inexistente' in data['answer']
+    assert '[99]' not in data['answer'] and 'cita no válida' in data['answer']
     assert data['sources'][0]['citation'] == 1
 
 

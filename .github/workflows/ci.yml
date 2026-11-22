@@ -24,3 +24,12 @@ jobs:
         run: python -m pytest -q
       - name: Validate source catalog
         run: flipper-rag sources --catalog-file sources.json
+      - name: Offline retrieval benchmark (no LLM, no network)
+        env:
+          RAG_EMBED_PROVIDER: none
+          RAG_CHAT_PROVIDER: none
+          RAG_DB_PATH: ${{ runner.temp }}/flipper-rag-ci.sqlite3
+        run: |
+          flipper-rag ingest --path knowledge/starter --source-id starter
+          flipper-rag eval --file benchmarks/offline.jsonl --mode lexical --top-k 6 --min-recall 0.85
+          flipper-rag audit

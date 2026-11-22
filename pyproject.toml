@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "flipperzero-rag"
-version = "0.2.0"
+version = "0.3.0"
 description = "Local, source-grounded RAG assistant for the Flipper Zero ecosystem"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -14,6 +14,7 @@ dependencies = ["fastapi>=0.110,<1", "uvicorn[standard]>=0.27,<1", "pydantic>=2,
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<10", "httpx>=0.27,<1"]
+pdf = ["pypdf>=5,<7"]
 
 [project.scripts]
 flipper-rag = "flipper_rag.cli:main"
