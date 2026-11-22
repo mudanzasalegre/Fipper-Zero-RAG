@@ -31,9 +31,14 @@ def _valid_reference(url: str) -> bool:
         return False
     if parsed.hostname in {"docs.flipper.net", "developer.flipper.net"}:
         return (parsed.path.startswith("/zero/") or parsed.path == "/zero") if parsed.hostname == "docs.flipper.net" else parsed.path.startswith("/flipperzero/doxygen/")
-    return (parsed.hostname == "github.com" and parsed.path.startswith(
-        "/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/")
-        and parsed.path.endswith(".c"))
+    if parsed.hostname != "github.com":
+        return False
+    match = re.fullmatch(
+        r"/flipperdevices/flipperzero-firmware/blob/([0-9a-f]{40})/"
+        r"(lib/subghz/protocols/protocol_items\.c|"
+        r"lib/nfc/protocols/iso15693_3/iso15693_3\.c)", parsed.path
+    )
+    return match is not None
 
 
 def validate_registry(data: dict) -> list[dict]:
@@ -59,6 +64,16 @@ def validate_registry(data: dict) -> list[dict]:
             raise ValueError("Malformed protocol aliases")
         if not isinstance(item["reference"], str) or not _valid_reference(item["reference"]):
             raise ValueError("Non-official protocol reference")
+        if item["evidence_scope"] == "dev-source-registry":
+            if item["family"] != "sub-ghz" or not item["reference"].endswith(
+                "/lib/subghz/protocols/protocol_items.c"):
+                raise ValueError("Sub-GHz source scope requires pinned upstream registry")
+            if item.get("upstream_symbol") != "subghz_protocol_" + item["name"]:
+                raise ValueError("Sub-GHz source symbol does not match registry name")
+        if item["evidence_scope"] == "firmware-source-snapshot":
+            if item["id"] != "iso-15693" or not item["reference"].endswith(
+                "/lib/nfc/protocols/iso15693_3/iso15693_3.c"):
+                raise ValueError("Unexpected firmware snapshot scope")
     if not ids:
         raise ValueError("Protocol registry is empty")
     return data["entries"]
@@ -117,6 +132,7 @@ def protocol_documents():
                 f"Familia: {p['family']}\n"
                 f"Capa: {p['layer']}\n"
                 f"Ámbito documental: {p['evidence_scope']}\n"
+                f"Símbolo fuente: {p.get('upstream_symbol', 'no indicado')}\n"
                 f"Sinónimos: {', '.join(p['aliases']) or 'ninguno'}\n\n"
                 f"{p['summary']}\n\n"
                 f"{family_context.get(p['family'], '')}\n\n"
@@ -126,6 +142,6 @@ def protocol_documents():
                 f"Referencia técnica oficial: {p['reference']}\n")
         yield Document(doc_id=document_id(SOURCE_ID, p['id']), source_id=SOURCE_ID,
                        title=f"Protocolos / {p['family']} / {p['name']}", url=p['reference'],
-                       category=p['family'], body=text, revision="2026-11-22-curated-v1",
+                       category=p['family'], body=text, revision="2026-11-22-curated-v2",
                        trust="local", license="Original technical summary; follow upstream licensing",
                        firmware_channel="unversioned")

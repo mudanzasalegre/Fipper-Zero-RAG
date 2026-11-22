@@ -22,12 +22,13 @@ Ampliar la cobertura de **protocolos** sin confundir la existencia de un identif
 | `file-format-or-tech-spec` | Citado en documentación HF NFC o formato | Emulación o lectura de contenido protegido en todos los casos |
 | `official-reader-list` | Enumerado entre protocolos LF para lectura | Escritura/emulación universal |
 | `file-format-listed` | Identificador admitido en formato IR o iButton | Compatibilidad con todos los dispositivos finales |
-| `dev-source-registry` | Nombre presente en registro Sub-GHz de rama `dev` | Soporte en release instalada, licencia TX, replay exitoso |
+| `dev-source-registry` | Identificador en registro Sub-GHz de **commit fijado** de la rama `dev` | Soporte en release instalada, licencia TX, replay exitoso |
+| `firmware-source-snapshot` | Implementación en un commit concreto (ISO 15693-3) | Soporte garantizado en cualquier release o función de emulación |
 | `official-hardware-or-protocol-doc` | Bus/perfil especificado por proveedor | Disponibilidad con cualquier hardware/firmware |
 
 El registro usa `trust=local` al indexar las explicaciones editoriales. Las fuentes originales tienen URL oficial, pero los resúmenes **no se reetiquetan como documentación oficial**. Se registra `firmware_channel=unversioned` y la búsqueda `--firmware-version ... --version-policy strict` los excluye. De este modo no se atribuye compatibilidad a revisiones futuras o antiguas.
 
-Los 118 registros **no son 118 capacidades verificadas de emulación**. Un gran número de registros Sub-GHz procede de un inventario de la rama `dev` y debe validarse contra una release de interés.
+Los 118 registros **no son 118 capacidades verificadas de emulación**. Los **53 nombres Sub-GHz** se han contrastado con el archivo `protocol_items.c` en el commit `e459e2d939db7f292d7dcfe6935b8fb2641409e3` de `dev`. ISO 15693-3 enlaza al archivo de implementación en ese mismo commit, ya que no figura en la página de formatos `.nfc` citada inicialmente. Este snapshot sigue sin acreditar el comportamiento de una release concreta.
 
 ## Procedimiento de instalación y evaluación
 
@@ -53,7 +54,8 @@ Para obtener datos actualizados del firmware real: `flipper-rag sync --web --cra
 - [Infrared parsed/RAW `.ir`](https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html)
 - [iButton `.ibtn`](https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html)
 - [Sub-GHz `.sub` y RAW](https://developer.flipper.net/flipperzero/doxygen/subghz_file_format.html)
-- [Lista Sub-GHz en firmware `dev` (no matriz de soporte release)](https://github.com/flipperdevices/flipperzero-firmware/blob/dev/lib/subghz/protocols/protocol_items.c)
+- [Lista Sub-GHz en firmware `dev` (no matriz de soporte release)](https://github.com/flipperdevices/flipperzero-firmware/blob/e459e2d939db7f292d7dcfe6935b8fb2641409e3/lib/subghz/protocols/protocol_items.c)
+- [Implementación ISO 15693-3 en firmware (snapshot)](https://github.com/flipperdevices/flipperzero-firmware/blob/e459e2d939db7f292d7dcfe6935b8fb2641409e3/lib/nfc/protocols/iso15693_3/iso15693_3.c)
 - [Protocolo de módulos de expansión](https://developer.flipper.net/flipperzero/doxygen/expansion_protocol.html)
 - [Frecuencias regionales](https://docs.flipper.net/zero/sub-ghz/frequencies)
 

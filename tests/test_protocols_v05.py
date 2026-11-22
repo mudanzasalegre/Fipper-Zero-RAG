@@ -27,6 +27,14 @@ def test_registry_118_unique_and_official_urls():
     assert get_protocol('ISO14443-4A')['name']=='ISO 14443-4A'
     assert get_protocol('subghz-keeloq')['family']=='sub-ghz'
     assert get_protocol('does-not-exist') is None
+    pinned = 'e459e2d939db7f292d7dcfe6935b8fb2641409e3'
+    subghz = [p for p in entries if p['family']=='sub-ghz']
+    assert len(subghz)==53
+    assert all('/blob/'+pinned+'/' in p['reference'] for p in subghz)
+    assert all(p['upstream_symbol']=='subghz_protocol_'+p['name'] for p in subghz)
+    iso=get_protocol('ISO 15693')
+    assert iso['evidence_scope']=='firmware-source-snapshot'
+    assert '/blob/'+pinned+'/lib/nfc/protocols/iso15693_3/' in iso['reference']
     assert get_protocol('IR') is None
 
 
