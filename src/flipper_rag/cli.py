@@ -18,12 +18,14 @@ def main(argv: list[str] | None = None):
     ingest.add_argument("--path", type=Path, default=Path("knowledge/starter"))
     ingest.add_argument("--source-id", default="notas-locales")
     ingest.add_argument("--force", action="store_true", help="Reindex unchanged files")
+    ingest.add_argument("--firmware-version", help="Associate local documents with an explicit firmware release tag")
     ingest.add_argument("--pdf", action="store_true", help="Index text PDFs by page (pip install -e '.[pdf]')")
     ingest.add_argument("--prune", action="store_true", help="Remove no-longer-present local files after successful scan")
 
     sync = sub.add_parser("sync", help="Retrieve and index permitted official sources")
     sync.add_argument("--catalog-file", type=Path, default=Path("sources.json"))
     sync.add_argument("--web", action="store_true", help="Fetch curated official documentation pages")
+    sync.add_argument("--firmware-ref", help="Index an official firmware release tag (e.g. 1.5.1), retaining other snapshots")
     sync.add_argument("--firmware", action="store_true", help="Clone/index official firmware docs")
     sync.add_argument("--apps", action="store_true", help="Clone/index official app catalog")
     sync.add_argument("--all", action="store_true", help="All official sources, excluding community")
@@ -47,6 +49,9 @@ def main(argv: list[str] | None = None):
     sub.add_parser("doctor", help="Check local prerequisites and configuration")
     reembed = sub.add_parser("reembed", help="Fill missing vectors with Ollama")
     reembed.add_argument("--batch", type=int, default=16)
+    reembed.add_argument("--build-ann", action="store_true", help="Build optional ANN cache after embedding")
+    ann = sub.add_parser("ann", help="Manage persistent USearch HNSW index")
+    ann.add_argument("action", choices=("status", "build"))
     search = sub.add_parser("search", help="Hybrid lexical + semantic retrieval")
     search.add_argument("question", nargs="+")
     search.add_argument("--top-k", type=int, default=6)
@@ -55,6 +60,9 @@ def main(argv: list[str] | None = None):
     search.add_argument("--category")
     search.add_argument("--source-id")
     search.add_argument("--no-expand", action="store_true")
+    search.add_argument("--firmware-version", help="Filter by exact firmware release with optional unversioned sources")
+    search.add_argument("--version-policy", choices=("strict", "include-unversioned"), default="include-unversioned")
+    search.add_argument("--rerank", action="store_true", help="Enable configured local reranker")
     ask = sub.add_parser("ask", help="Grounded LLM question-answering")
     ask.add_argument("question", nargs="+")
     ask.add_argument("--top-k", type=int, default=6)
@@ -63,10 +71,16 @@ def main(argv: list[str] | None = None):
     ask.add_argument("--category")
     ask.add_argument("--source-id")
     ask.add_argument("--no-expand", action="store_true")
+    ask.add_argument("--firmware-version")
+    ask.add_argument("--version-policy", choices=("strict", "include-unversioned"), default="include-unversioned")
+    ask.add_argument("--rerank", action="store_true")
     evaluate = sub.add_parser("eval", help="Recall@k on benchmark questions")
     evaluate.add_argument("--file", type=Path, default=Path("benchmarks/questions.jsonl"))
     evaluate.add_argument("--top-k", type=int, default=6)
     evaluate.add_argument("--mode", choices=("lexical", "hybrid", "semantic"), default="lexical")
+    evaluate.add_argument("--firmware-version")
+    evaluate.add_argument("--version-policy", choices=("strict", "include-unversioned"), default="include-unversioned")
+    evaluate.add_argument("--rerank", action="store_true")
     evaluate.add_argument("--json-output", type=Path, help="Write complete machine-readable report")
     evaluate.add_argument("--min-recall", type=float, default=0.0,
                           help="Fail when recall is below threshold (0..1)")
@@ -81,7 +95,8 @@ def main(argv: list[str] | None = None):
             p.error(f"Directory not found: {args.path}")
         seen: set[str] = set()
         result = index_documents(store, local_documents(args.path, source_id=args.source_id,
-                                 include_pdf=args.pdf), embedder, force=args.force, seen_ids=seen)
+                                 include_pdf=args.pdf, firmware_version=args.firmware_version or ''),
+                                 embedder, force=args.force, seen_ids=seen)
         removed = 0
         if args.prune and result["failed"] == 0 and seen:
             removed = store.prune_source(args.source_id, seen)
@@ -89,7 +104,7 @@ def main(argv: list[str] | None = None):
         store.record_sync(args.source_id, result, removed=removed)
         print(json.dumps(result, indent=2, ensure_ascii=False))
     elif args.command == "sync":
-        if not any((args.web, args.firmware, args.apps, args.tools, args.community, args.all)):
+        if not any((args.web, args.firmware, args.firmware_ref, args.apps, args.tools, args.community, args.all)):
             p.error("Select at least one: --web, --firmware, --apps, --tools, --community, --all")
         catalog = load_catalog(args.catalog_file)
         overall = []
@@ -102,7 +117,7 @@ def main(argv: list[str] | None = None):
             result.update(web_report)
             store.record_sync("web-oficial", result)
             overall.append(("web", result))
-        names = ({"firmware-oficial"} if args.firmware else set()) | ({"apps-catalogo-oficial"} if args.apps else set())
+        names = ({"firmware-oficial"} if args.firmware or args.firmware_ref else set()) | ({"apps-catalogo-oficial"} if args.apps else set())
         tool_ids = {"ufbt-oficial", "protobuf-oficial", "qflipper-oficial", "good-faps-oficial"}
         if args.tools:
             names |= tool_ids
@@ -113,6 +128,12 @@ def main(argv: list[str] | None = None):
         for spec in catalog["git"]:
             if spec["id"] not in names:
                 continue
+            if spec['id'] == 'firmware-oficial' and args.firmware_ref:
+                from .versioning import firmware_source_for_ref
+                try:
+                    spec = firmware_source_for_ref(spec, args.firmware_ref)
+                except ValueError as exc:
+                    p.error(str(exc))
             try:
                 docs = git_documents(spec, Path("data/git-cache"), include_code=args.with_code)
                 seen: set[str] = set()
@@ -154,7 +175,17 @@ def main(argv: list[str] | None = None):
                   "git_available": bool(shutil.which("git")),
                   "sqlite_fts5": "FTS5" in " ".join(row[0] for row in sqlite3.connect(":memory:").execute("PRAGMA compile_options")),
                   "chat_provider": settings.chat_provider, "embedding_provider": settings.embed_provider,
-                  "db_path": str(settings.db_path), "documents": store.stats()["documents"]}
+                  "db_path": str(settings.db_path), "documents": store.stats()["documents"],
+                  "ann": retriever.ann.status(settings.embed_model).as_dict() if retriever.ann else {"state": "disabled"},
+                  "reranker": settings.rerank_provider}
+        print(json.dumps(report, indent=2, ensure_ascii=False))
+    elif args.command == "ann":
+        from .ann import ANNIndex, ANNUnavailable
+        index = ANNIndex(store, settings.ann_path)
+        try:
+            report = index.build(settings.embed_model) if args.action == 'build' else index.status(settings.embed_model).as_dict()
+        except ANNUnavailable as exc:
+            p.error(str(exc))
         print(json.dumps(report, indent=2, ensure_ascii=False))
     elif args.command == "reembed":
         if not embedder.active:
@@ -175,18 +206,27 @@ def main(argv: list[str] | None = None):
             if updated % (batch * 10) == 0:
                 print(f"Embeddings calculated: {updated}")
         print(f"OK: {updated} vectors created/updated")
+        if args.build_ann:
+            from .ann import ANNIndex, ANNUnavailable
+            try:
+                print(json.dumps(ANNIndex(store, settings.ann_path).build(settings.embed_model), indent=2))
+            except ANNUnavailable as exc:
+                p.error(str(exc))
     elif args.command == "search":
         data = retriever.search(" ".join(args.question), args.top_k, category=args.category,
                                 mode=args.mode, trust=args.trust, source_id=args.source_id,
-                                expand=not args.no_expand)
+                                expand=not args.no_expand,
+                                firmware_version=args.firmware_version, version_policy=args.version_policy,
+                                rerank=args.rerank)
         for i, hit in enumerate(data["results"], 1):
             print(f"[{i}] {hit['title']} ({hit['category']})\n    {hit['url']}\n    {hit['content'][:350]}\n")
-        print("Semantic retrieval:", data["semantic_available"])
+        print("Semantic backend:", data['semantic_backend'], "| Rerank:", data['reranker_status'])
     elif args.command == "ask":
         data = RAGService(retriever, ChatModel(settings), settings).ask(
             " ".join(args.question), category=args.category, top_k=args.top_k,
             mode=args.mode, trust=args.trust, source_id=args.source_id,
-            expand=not args.no_expand)
+            expand=not args.no_expand, firmware_version=args.firmware_version,
+            version_policy=args.version_policy, rerank=args.rerank)
         print(data["answer"])
         for s in data["sources"]:
             print(f"[{s['citation']}] {s['title']} — {s['url']}")
@@ -194,13 +234,16 @@ def main(argv: list[str] | None = None):
         from .evaluation import evaluate, load_cases
         if not args.file.exists():
             p.error(f"Benchmark file not found: {args.file}")
-        report = evaluate(retriever, load_cases(args.file), top_k=args.top_k, mode=args.mode)
+        report = evaluate(retriever, load_cases(args.file), top_k=args.top_k, mode=args.mode,
+                          firmware_version=args.firmware_version,
+                          version_policy=args.version_policy, rerank=args.rerank)
         for case in report["details"]:
             status = "PASS" if case["success"] else "MISS"
             print(f"{status}: {case['question']}" + (f" (rank {case['rank']})" if case["rank"] else ""))
         print(f"Recall@{args.top_k}: {report['recall_at_k']:.1%} | MRR: {report['mrr']:.3f}"
               + (f" | Abstention: {report['abstention_accuracy']:.1%}"
-                 if report["abstention_accuracy"] is not None else ""))
+                 if report["abstention_accuracy"] is not None else "")
+              + f" | Median {report['latency_ms']['median']} ms | Backends {report['semantic_backends']}")
         if args.json_output:
             args.json_output.parent.mkdir(parents=True, exist_ok=True)
             args.json_output.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")

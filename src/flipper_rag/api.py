@@ -15,7 +15,7 @@ settings = Settings()
 store = Store(settings.db_path)
 retriever = Retriever(store, Embedder(settings))
 service = RAGService(retriever, ChatModel(settings), settings)
-app = FastAPI(title="Flipper Zero RAG", version="0.3.0", docs_url="/api/docs")
+app = FastAPI(title="Flipper Zero RAG", version="0.4.0", docs_url="/api/docs")
 
 
 class Query(BaseModel):
@@ -26,6 +26,10 @@ class Query(BaseModel):
     trust: Literal["official", "community", "local"] | None = None
     source_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9_-]{1,80}$")
     expand: bool = True
+    firmware_version: str | None = Field(default=None, max_length=32,
+                                         pattern=r"^v?[0-9]+\.[0-9]+(\.[0-9]+)?(-rc(\.[0-9]+)?)?$")
+    version_policy: Literal["strict", "include-unversioned"] = "include-unversioned"
+    rerank: bool = False
 
 
 @app.middleware("http")
@@ -50,7 +54,9 @@ def home():
 @app.get("/api/health")
 def health():
     return {"status": "ok", "chat_provider": settings.chat_provider,
-            "embedding_provider": settings.embed_provider}
+            "embedding_provider": settings.embed_provider,
+            "reranker_provider": settings.rerank_provider,
+            "ann": retriever.ann.status(settings.embed_model).as_dict() if retriever.ann else {"state": "disabled"}}
 
 
 @app.get("/api/stats")
@@ -66,10 +72,14 @@ def runs(limit: int = 30):
 @app.post("/api/search")
 def search(req: Query):
     return retriever.search(req.query, req.top_k, req.category, req.mode, req.trust,
-                            source_id=req.source_id, expand=req.expand)
+                            source_id=req.source_id, expand=req.expand,
+                            firmware_version=req.firmware_version,
+                            version_policy=req.version_policy, rerank=req.rerank)
 
 
 @app.post("/api/ask")
 def ask(req: Query):
     return service.ask(req.query, req.category, req.top_k, req.mode, req.trust,
-                       source_id=req.source_id, expand=req.expand)
+                       source_id=req.source_id, expand=req.expand,
+                       firmware_version=req.firmware_version,
+                       version_policy=req.version_policy, rerank=req.rerank)

@@ -16,3 +16,8 @@ class Settings:
     openai_base_url: str = os.getenv("RAG_OPENAI_BASE_URL", "http://127.0.0.1:8080/v1").rstrip("/")
     openai_model: str = os.getenv("RAG_OPENAI_MODEL", "local-model")
     openai_api_key: str = os.getenv("RAG_OPENAI_API_KEY", "local")
+    ann_enabled: bool = os.getenv("RAG_ANN_ENABLED", "true").lower() in {"true", "1", "yes"}
+    ann_path: Path | None = Path(os.environ["RAG_ANN_PATH"]) if os.getenv("RAG_ANN_PATH") else None
+    rerank_provider: str = os.getenv("RAG_RERANK_PROVIDER", "none").lower()
+    rerank_model: str = os.getenv("RAG_RERANK_MODEL", "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1")
+    rerank_batch_size: int = int(os.getenv("RAG_RERANK_BATCH_SIZE", "8"))

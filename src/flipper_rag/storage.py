@@ -20,6 +20,8 @@ class Document:
     revision: str = ""
     license: str = "See original source"
     trust: str = "official"
+    firmware_version: str = ""
+    firmware_channel: str = "unversioned"
 
 
 def document_id(source_id: str, path: str) -> str:
@@ -53,7 +55,9 @@ class Store:
                 CREATE TABLE IF NOT EXISTS documents (
                     id TEXT PRIMARY KEY, source_id TEXT NOT NULL, title TEXT NOT NULL,
                     url TEXT NOT NULL, category TEXT NOT NULL, revision TEXT NOT NULL,
-                    license TEXT NOT NULL, trust TEXT NOT NULL DEFAULT 'official', content_sha TEXT NOT NULL, indexed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    license TEXT NOT NULL, trust TEXT NOT NULL DEFAULT 'official',
+                    firmware_version TEXT NOT NULL DEFAULT '', firmware_channel TEXT NOT NULL DEFAULT 'unversioned',
+                    content_sha TEXT NOT NULL, indexed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
                 );
                 CREATE INDEX IF NOT EXISTS idx_doc_source ON documents(source_id);
                 CREATE INDEX IF NOT EXISTS idx_doc_category_trust ON documents(category,trust);
@@ -67,6 +71,8 @@ class Store:
                 CREATE VIRTUAL TABLE IF NOT EXISTS chunks_fts USING fts5(
                     title, body, chunk_id UNINDEXED, tokenize='unicode61 remove_diacritics 2'
                 );
+                CREATE TABLE IF NOT EXISTS index_meta (key TEXT PRIMARY KEY, value INTEGER NOT NULL);
+                INSERT OR IGNORE INTO index_meta(key,value) VALUES('vector_epoch',0);
                 CREATE TABLE IF NOT EXISTS sync_runs (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     source_id TEXT NOT NULL,
@@ -84,6 +90,11 @@ class Store:
             cols = {row[1] for row in c.execute("PRAGMA table_info(documents)")}
             if "trust" not in cols:
                 c.execute("ALTER TABLE documents ADD COLUMN trust TEXT NOT NULL DEFAULT 'official'")
+            if "firmware_version" not in cols:
+                c.execute("ALTER TABLE documents ADD COLUMN firmware_version TEXT NOT NULL DEFAULT ''")
+            if "firmware_channel" not in cols:
+                c.execute("ALTER TABLE documents ADD COLUMN firmware_channel TEXT NOT NULL DEFAULT 'unversioned'")
+            c.execute("CREATE INDEX IF NOT EXISTS idx_documents_firmware ON documents(firmware_version,firmware_channel)")
 
     def upsert(self, doc: Document, chunks: Sequence[Chunk], vectors: Sequence[list[float]] | None = None,
                embedding_model: str = "", force: bool = False) -> str:
@@ -91,18 +102,19 @@ class Store:
         if vectors is not None and len(vectors) != len(chunks):
             raise ValueError("Embedding count does not match chunks")
         with self.connect() as c:
-            old = c.execute("SELECT content_sha,revision,url,category,title,trust,license FROM documents WHERE id=?", (doc.doc_id,)).fetchone()
-            if old and old["content_sha"] == digest and old["revision"] == doc.revision and all(old[k] == getattr(doc,k) for k in ("url","category","title","trust","license")) and not force:
+            old = c.execute("SELECT content_sha,revision,url,category,title,trust,license,firmware_version,firmware_channel FROM documents WHERE id=?", (doc.doc_id,)).fetchone()
+            if old and old["content_sha"] == digest and old["revision"] == doc.revision and all(old[k] == getattr(doc,k) for k in ("url","category","title","trust","license","firmware_version","firmware_channel")) and not force:
                 return "unchanged"
             self._delete_chunks(c, doc.doc_id)
-            c.execute("""INSERT INTO documents(id,source_id,title,url,category,revision,license,trust,content_sha)
-                         VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET
+            c.execute("""INSERT INTO documents(id,source_id,title,url,category,revision,license,trust,firmware_version,firmware_channel,content_sha)
+                         VALUES(?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET
                          source_id=excluded.source_id,title=excluded.title,url=excluded.url,
                          category=excluded.category,revision=excluded.revision,license=excluded.license,
-                         trust=excluded.trust,
+                         trust=excluded.trust,firmware_version=excluded.firmware_version,
+                         firmware_channel=excluded.firmware_channel,
                          content_sha=excluded.content_sha,indexed_at=CURRENT_TIMESTAMP""",
                       (doc.doc_id, doc.source_id, doc.title, doc.url, doc.category,
-                       doc.revision, doc.license, doc.trust, digest))
+                       doc.revision, doc.license, doc.trust, doc.firmware_version, doc.firmware_channel, digest))
             for n, ch in enumerate(chunks):
                 cid = f"{doc.doc_id}:{n}"
                 v = json.dumps(vectors[n]) if vectors is not None else None
@@ -112,6 +124,7 @@ class Store:
                            v, embedding_model if v else None))
                 c.execute("INSERT INTO chunks_fts(title,body,chunk_id) VALUES(?,?,?)",
                           (doc.title + " " + ch.heading, ch.content, cid))
+            self._bump_vector_epoch(c)
             return "updated" if old else "added"
 
     @staticmethod
@@ -128,28 +141,71 @@ class Store:
                     self._delete_chunks(c, did)
                     c.execute("DELETE FROM documents WHERE id=?", (did,))
                     removed += 1
+            if removed:
+                self._bump_vector_epoch(c)
             return removed
 
     def has_current(self, doc: Document, *, force=False) -> bool:
         if force:
             return False
         with self.connect() as c:
-            row = c.execute("SELECT content_sha,revision,url,category,title,trust,license FROM documents WHERE id=?", (doc.doc_id,)).fetchone()
+            row = c.execute("SELECT content_sha,revision,url,category,title,trust,license,firmware_version,firmware_channel FROM documents WHERE id=?", (doc.doc_id,)).fetchone()
             return bool(row and row["content_sha"] == hashlib.sha256(doc.body.encode()).hexdigest()
                         and row["revision"] == doc.revision
-                        and all(row[k] == getattr(doc,k) for k in ("url","category","title","trust","license")))
+                        and all(row[k] == getattr(doc,k) for k in ("url","category","title","trust","license","firmware_version","firmware_channel")))
 
     @staticmethod
-    def _filter_clause(category: str | None, trust: str | None, source_id: str | None) -> tuple[str, list[str]]:
+    def _filter_clause(category: str | None, trust: str | None, source_id: str | None,
+                       firmware_version: str | None = None,
+                       version_policy: str = 'include-unversioned') -> tuple[str, list[str]]:
         filters, args = [], []
         for field, value in (("category", category), ("trust", trust), ("source_id", source_id)):
             if value:
                 filters.append(f"d.{field}=?")
                 args.append(value)
+        if firmware_version:
+            from .versioning import normalize_version
+            version = normalize_version(firmware_version)
+            if version_policy not in {'strict', 'include-unversioned'}:
+                raise ValueError('Invalid firmware version policy')
+            if version_policy == 'strict':
+                filters.append("d.firmware_version=?")
+            else:
+                # Only exact releases or explicitly unversioned sources. Never
+                # treat a moving dev branch as validated for a stable release.
+                filters.append("(d.firmware_version=? OR (d.firmware_version='' AND d.firmware_channel='unversioned'))")
+            args.append(version)
         return "".join(" AND " + clause for clause in filters), args
 
+    @staticmethod
+    def _bump_vector_epoch(con: sqlite3.Connection):
+        con.execute("UPDATE index_meta SET value=value+1 WHERE key='vector_epoch'")
+
+    def vector_epoch(self) -> int:
+        with self.connect() as c:
+            return int(c.execute("SELECT value FROM index_meta WHERE key='vector_epoch'").fetchone()[0])
+
+    def eligible_chunk_ids(self, ids: Sequence[str], *, category: str | None = None,
+                           trust: str | None = None, source_id: str | None = None,
+                           firmware_version: str | None = None,
+                           version_policy: str = 'include-unversioned') -> set[str]:
+        if not ids:
+            return set()
+        extra, params = self._filter_clause(category, trust, source_id, firmware_version, version_policy)
+        result: set[str] = set()
+        # Avoid SQLite variable-number limits, which vary by installed version.
+        with self.connect() as c:
+            for n in range(0, len(ids), 500):
+                batch = ids[n:n+500]
+                marks = ','.join('?' for _ in batch)
+                for row in c.execute(f"SELECT c.id FROM chunks c JOIN documents d ON c.doc_id=d.id WHERE c.id IN ({marks})" + extra, (*batch, *params)):
+                    result.add(row[0])
+        return result
+
     def lexical(self, query: str, limit: int = 60, *, category: str | None = None,
-                trust: str | None = None, source_id: str | None = None) -> list[str]:
+                trust: str | None = None, source_id: str | None = None,
+                firmware_version: str | None = None,
+                version_policy: str = "include-unversioned") -> list[str]:
         import re
         # FTS5 parameter binding prevents MATCH operator injection. Keep C symbols,
         # snake_case, and accented words intact for exact technical searches.
@@ -166,7 +222,7 @@ class Store:
         if not tokens:
             return []
         fts_query = " OR ".join('"' + t.replace('"', '""') + '"' for t in tokens)
-        extra, params = self._filter_clause(category, trust, source_id)
+        extra, params = self._filter_clause(category, trust, source_id, firmware_version, version_policy)
         with self.connect() as c:
             rows = c.execute("""SELECT chunks_fts.chunk_id, chunks_fts.title, chunks_fts.body FROM chunks_fts
                 JOIN chunks c ON c.id=chunks_fts.chunk_id
@@ -192,9 +248,10 @@ class Store:
                 "SELECT id,embedding FROM chunks WHERE embedding IS NOT NULL AND embedding_model=?", (model,))]
 
     def iter_embeddings(self, model: str, *, category: str | None = None,
-                        trust: str | None = None, source_id: str | None = None):
+                        trust: str | None = None, source_id: str | None = None,
+                        firmware_version: str | None = None, version_policy: str = "include-unversioned"):
         """Stream only relevant vectors for the requested filters."""
-        extra, params = self._filter_clause(category, trust, source_id)
+        extra, params = self._filter_clause(category, trust, source_id, firmware_version, version_policy)
         with self.connect() as c:
             for r in c.execute("""SELECT c.id,c.embedding FROM chunks c
                 JOIN documents d ON d.id=c.doc_id
@@ -218,6 +275,8 @@ class Store:
         with self.connect() as c:
             c.executemany("UPDATE chunks SET embedding=?,embedding_model=? WHERE id=?",
                           [(json.dumps(v), model, cid) for cid, v in zip(ids, vectors)])
+            if ids:
+                self._bump_vector_epoch(c)
 
     def get_chunks(self, ids: Sequence[str]) -> dict[str, dict]:
         if not ids:
@@ -225,7 +284,7 @@ class Store:
         marks = ",".join("?" for _ in ids)
         with self.connect() as c:
             rows = c.execute(f"""SELECT c.id,c.content,c.heading,c.line_start,c.line_end,
-                 d.title,d.url,d.category,d.source_id,d.revision,d.license,d.trust,d.indexed_at,c.doc_id
+                 d.title,d.url,d.category,d.source_id,d.revision,d.license,d.trust,d.indexed_at,c.doc_id,d.firmware_version,d.firmware_channel
                  FROM chunks c JOIN documents d ON c.doc_id=d.id
                  WHERE c.id IN ({marks})""", tuple(ids)).fetchall()
         return {r["id"]: dict(r) for r in rows}
@@ -238,6 +297,7 @@ class Store:
             sources = [dict(r) for r in c.execute("""SELECT source_id, category, COUNT(*) AS documents
                             FROM documents GROUP BY source_id,category ORDER BY source_id""")]
         return {"documents": d, "chunks": ch, "embedded_chunks": emb,
+                "vector_epoch": self.vector_epoch(),
                 "embedding_coverage": round(emb / ch, 4) if ch else 0,
                 "sources": sources}
 

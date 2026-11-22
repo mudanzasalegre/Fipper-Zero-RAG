@@ -33,3 +33,15 @@ jobs:
           flipper-rag ingest --path knowledge/starter --source-id starter
           flipper-rag eval --file benchmarks/offline.jsonl --mode lexical --top-k 6 --min-recall 0.85
           flipper-rag audit
+
+  ann-native:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install real USearch backend
+        run: python -m pip install -e '.[dev,ann]'
+      - name: Test native ANN persistence and entire suite
+        run: python -m pytest -q

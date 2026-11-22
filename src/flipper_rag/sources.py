@@ -14,8 +14,9 @@ from typing import Iterable
 from .chunking import chunk_text
 from .models import Embedder, ModelUnavailable
 from .storage import Document, Store, document_id
+from .versioning import channel_for_ref, normalize_version
 
-USER_AGENT = "FlipperZeroRAG/0.3 (local educational documentation indexing)"
+USER_AGENT = "FlipperZeroRAG/0.4 (local educational documentation indexing)"
 ALLOWED_DOC_HOSTS = {"docs.flipper.net", "developer.flipper.net"}
 # Explicitly reviewed upstream repositories. Users must opt into community firmware.
 ALLOWED_GIT_REPOS = {
@@ -285,7 +286,7 @@ def validate_git_source(spec: dict) -> None:
         raise ValueError("Invalid trust tier")
     if repo.startswith("flipperdevices/") != (spec.get("tier", "official") == "official"):
         raise ValueError("Trust tier disagrees with repository owner")
-    if not re.fullmatch(r"[a-zA-Z0-9_./-]+", spec.get("branch", "")) or ".." in spec["branch"]:
+    if not re.fullmatch(r"[a-zA-Z0-9_./-]+", spec.get("branch", "")) or ".." in spec["branch"] or spec["branch"].startswith("-"):
         raise ValueError("Invalid Git branch")
     for key in ("paths", "code_paths"):
         for pattern in spec.get(key, []):
@@ -340,17 +341,25 @@ def git_documents(spec: dict, cache: Path, *, include_code=False):
         yield Document(doc_id=document_id(spec["id"], rel), source_id=spec["id"],
                        title=rel, url=url, category=spec.get("category", "source"),
                        body=raw, revision=commit, license="See upstream repository license",
-                       trust=spec.get("tier", "official"))
+                       trust=spec.get("tier", "official"),
+                       firmware_version=spec.get('firmware_version', ''),
+                       firmware_channel=spec.get('firmware_channel',
+                           channel_for_ref(spec['branch']) if spec.get('id') == 'firmware-oficial' else 'unversioned'))
     print(f"Git {spec['id']}: {count} files indexed from {commit[:12]}")
 
 
-def local_documents(root: Path, *, source_id="local", category="notas", include_pdf: bool = False):
+def local_documents(root: Path, *, source_id="local", category="notas", include_pdf: bool = False,
+                    firmware_version: str = ''):
     """Enumerate eligible local documents; optionally extract PDFs page by page.
 
     PDFs are deliberately opt-in. One document per page preserves meaningful
     page-level citation targets (file:///path/document.pdf#page=N). Scanned PDFs
     without a text layer are skipped; OCR is not attempted.
     """
+    from .versioning import normalize_version, channel_for_ref
+    firmware_version = normalize_version(firmware_version) if firmware_version else ''
+    version_fields = {'firmware_version': firmware_version,
+                      'firmware_channel': channel_for_ref(firmware_version) if firmware_version else 'unversioned'}
     root = root.resolve()
     if not root.is_dir():
         raise NotADirectoryError(f"Local corpus directory does not exist: {root}")
@@ -381,7 +390,7 @@ def local_documents(root: Path, *, source_id="local", category="notas", include_
                     yield Document(doc_id=document_id(source_id, path), source_id=source_id,
                                    title=f"{rel} (página {page_number})",
                                    url=p.as_uri() + f"#page={page_number}", category=category,
-                                   body=body, license="User-provided local PDF", trust="local")
+                                   body=body, license="User-provided local PDF", trust="local", **version_fields)
             except (OSError, ValueError, KeyError) as exc:
                 print(f"[WARN] PDF could not be extracted: {rel}: {exc}")
             continue
@@ -390,4 +399,4 @@ def local_documents(root: Path, *, source_id="local", category="notas", include_
         yield Document(doc_id=document_id(source_id, rel), source_id=source_id,
                        title=rel, url=p.as_uri(), category=category,
                        body=p.read_text("utf-8", "replace"),
-                       license="User-provided local document", trust="local")
+                       license="User-provided local document", trust="local", **version_fields)

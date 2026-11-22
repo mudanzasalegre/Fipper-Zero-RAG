@@ -8,9 +8,11 @@
 
 ## Qué incluye
 
-- **Cobertura ampliada (v0.3)**: 61 páginas web semilla, 6 repositorios oficiales (firmware, catálogo, uFBT, Protobuf, qFlipper, ejemplos FAP) y 3 fuentes comunitarias opt-in. Ingesta real: páginas web seleccionadas y recorrido opcional de enlaces de `docs.flipper.net` y `developer.flipper.net`, repositorio de firmware oficial, catálogo de aplicaciones oficial y archivos locales.
+- **Cobertura ampliada (v0.4)**: 61 páginas web semilla, 6 repositorios oficiales (firmware, catálogo, uFBT, Protobuf, qFlipper, ejemplos FAP) y 3 fuentes comunitarias opt-in. Ingesta real: páginas web seleccionadas y recorrido opcional de enlaces de `docs.flipper.net` y `developer.flipper.net`, repositorio de firmware oficial, catálogo de aplicaciones oficial y archivos locales.
 - **Rastreabilidad**: URLs de fuentes originales, categorías, confianza (`official`/`community`/`local`), hashes, commit Git y líneas del código fuente.
-- **Búsqueda híbrida**: SQLite FTS5 (léxica/BM25) + embeddings Ollama (similitud coseno), fusionadas mediante Reciprocal Rank Fusion. Si falta Ollama, funciona el modo FTS5.
+- **Búsqueda híbrida**: SQLite FTS5 (léxica/BM25) + embeddings Ollama (similitud coseno), fusionadas mediante Reciprocal Rank Fusion. **USearch HNSW** (ANN persistente opcional), búsqueda exacta de respaldo si la caché no está lista.
+- **Reranking local opcional**: CrossEncoder multilingüe sobre una shortlist de resultados; requiere dependencia extra e instalación local del modelo.
+- **Consultas por versión del firmware**: sincronización de etiquetas oficiales release y RC como snapshots separados, filtros exactos y advertencias para documentación sin versión.
 - **Asistente local**: Ollama o servidor de chat compatible con OpenAI (llama.cpp, LM Studio o vLLM). Los embeddings también pueden usar una API OpenAI-compatible.
 - **Interfaz web**: consultas en español, búsqueda documental, fuentes clicables y estadísticas.
 - **Mantenimiento**: actualización incremental, recalculado de embeddings, diagnóstico, benchmark Recall@K/MRR, tests CI y Docker Compose.
@@ -19,6 +21,8 @@
 **Ampliación v0.2 (2026-11-22):** seis repositorios oficiales y tres comunitarios opcionales en el catálogo: firmware, Apps Catalog, uFBT, protobuf RPC y ejemplos good-faps. Se han añadido auditoría del índice, fuentes y pruebas, e ingesta local de `.proto`, `.fam`, `.js` y `.py`. Consulta [investigación](docs/RESEARCH_2026.md) y [fuentes](docs/SOURCES.md). El proyecto solo documenta, no ejecuta acciones sobre hardware.
 
 **Novedades v0.3 (2026-11-22):** catálogo de 61 semillas de documentación oficial (formatos NFC/RFID/IR/Sub-GHz, módulos JS, hardware, Devboard, Furi y depuración). Filtros aplicados **antes** de recuperar candidatos (fuente/categoría/confianza), reducción de coincidencias genéricas, expansión terminológica ES/EN verificable y registro de sincronizaciones. `ingest --prune` y `sync --prune` son opcionales y están protegidos contra escaneos parciales. PDF local opcional, indexado por página (`pip install -e '.[pdf]'`); sin OCR. Nueva evaluación offline reproducible de 12 preguntas técnicas y un control negativo, integrada en CI. Más información en [iteración v0.3](docs/ITERATION_V03.md).
+
+**Novedades v0.4 (2026-11-22):** caché ANN HNSW persistente de USearch con invalidación por cambios SQLite y recuperación exacta automática; reranker local opcional con CrossEncoder y filtro versionado sobre snapshots oficiales por Git tag, sin inferir compatibilidad de documentación genérica o ramas dev. La integración ANN nativa se prueba en un job específico de CI. Ver [especificación técnica v0.4](docs/ITERATION_V04.md).
 
 **Estado del contenido:** se incluyen 15 guías originales de conocimiento introductorio redactadas para este proyecto. La documentación ajena no está empaquetada ni preindexada. La ingesta de fuentes oficiales debe ejecutarse explícitamente; al hacerlo se descargarán y crearán los índices locales.
 
@@ -55,6 +59,7 @@ ollama pull qwen2.5:7b
 
 # Recalcular los vectores de los documentos existentes
 flipper-rag reembed
+# Para corpus grandes: pip install -e ".[ann]" y flipper-rag ann build
 
 # Ingesta oficial básica (conexión a Internet)
 flipper-rag sync --web
@@ -70,6 +75,8 @@ flipper-rag sync --community
 # Opcional: código fuente C y cabeceras; índice considerablemente mayor
 flipper-rag sync --firmware --with-code
 ```
+
+Para indexar una **versión oficial concreta** sin mezclarla con el código de desarrollo actual, ejecuta `flipper-rag sync --firmware-ref 1.5.1 --with-code`. Comprueba la [lista oficial de versiones](https://update.flipperzero.one/builds/firmware/) antes de elegir otra etiqueta.
 
 Para cubrir más contenido oficial en una pasada: `make sync-full` en Linux/macOS (o ejecuta `flipper-rag sync --all --with-code --crawl --max-pages 350 --depth 2` directamente en Windows).
 
@@ -128,6 +135,33 @@ docker compose exec rag flipper-rag sync --firmware
 
 Abre **http://localhost:8000**. El primer arranque y las inferencias en CPU dependen de los recursos disponibles; usa un modelo de menor tamaño si es necesario. Compose publica ambos puertos **solo en loopback**. Si utilizas Ollama nativo en Apple Silicon, suele ser más sencillo usar la opción A para aprovechar aceleración local.
 
+## Búsqueda ANN, reranker y versiones (v0.4)
+
+Las funciones nuevas son opcionales y mantienen el modo anterior sin dependencias adicionales.
+
+```bash
+# Vectorizar con Ollama ya configurado
+flipper-rag reembed
+# HNSW persistente (extra de instalación con wheels Windows/Linux/macOS)
+python -m pip install -e ".[ann]"
+flipper-rag ann build
+flipper-rag ann status
+# Si actualizas documentos o embeddings, repite ann build
+
+# No necesitas descargar un modelo CrossEncoder hasta habilitarlo.
+python -m pip install -e ".[rerank]"
+# Bash:
+export RAG_RERANK_PROVIDER=cross-encoder
+# PowerShell: $env:RAG_RERANK_PROVIDER='cross-encoder'
+
+flipper-rag search "¿Qué API de NFC se encuentra en Furi?" --rerank
+flipper-rag sync --firmware-ref 1.5.1 --with-code
+flipper-rag reembed --build-ann
+flipper-rag ask "Funciones NFC en 1.5.1" --firmware-version 1.5.1 --version-policy strict --rerank
+```
+
+La versión `strict` **solo busca snapshots explícitamente etiquetados**; un manual web actual sin versión queda fuera. La política `include-unversioned` permite mostrar manuales genéricos como «compatibilidad no verificada», nunca como documentación certificada para la versión consultada. El asistente mantiene referencias a revisión Git y un campo visible de compatibilidad. Consulta [arquitectura y limitaciones](docs/ITERATION_V04.md).
+
 ## Comandos
 
 | Comando | Función |
@@ -148,6 +182,11 @@ Abre **http://localhost:8000**. El primer arranque y las inferencias en CPU depe
 | `flipper-rag sync --firmware --prune` | Quitar entradas Git que ya no están en la selección, solo si el escaneo fue completo |
 | `flipper-rag runs --limit 20` | Historial por fuente: documentos, fallos, fecha, estado |
 | `flipper-rag reembed` | Completar/reparar embeddings |
+| `flipper-rag reembed --build-ann` | Vectorizar y reconstruir índice ANN con USearch |
+| `flipper-rag ann build` / `flipper-rag ann status` | Reconstruir o inspeccionar el caché HNSW |
+| `flipper-rag sync --firmware-ref 1.5.1 --with-code` | Indexar versión oficial en origen separado de `dev` |
+| `flipper-rag search "NFC" --firmware-version 1.5.1 --version-policy strict` | Recuperar solo fuentes etiquetadas para esa release |
+| `flipper-rag ask "FAP" --rerank` | Activar reranker local si está instalado y configurado |
 | `flipper-rag search "pregunta"` | Inspeccionar fragmentos sin LLM |
 | `flipper-rag ask "pregunta"` | Consultar el RAG con citas |
 | `flipper-rag stats` | Contar documentos, fragmentos y vectores |

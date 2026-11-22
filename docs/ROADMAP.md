@@ -25,3 +25,16 @@
 - Monitoreo de cambios de hashes y métricas de obsolescencia.
 
 **No está implementado** el control del dispositivo, transmisión RF, lectura de tarjetas ni ninguna acción sobre sistemas externos. Este proyecto es un asistente documental.
+
+### Realizado en v0.4
+
+- Índice ANN persistente USearch HNSW con invalidación y fallback exacto.
+- CrossEncoder opcional local para reranking de shortlist.
+- Snapshots Git etiquetados por versión y restricciones conservadoras de compatibilidad.
+
+### Pendiente tras v0.4
+
+- Benchmark de corpus oficial real (Recall/nDCG/latencia) con juicios manuales de relevancia.
+- Recalibración y optimización de reranker multilingüe sobre preguntas de firmware.
+- Políticas de versiones más avanzadas: comparación de cambios de símbolos/API entre tags, diffs por release.
+- Cache ANN transaccional compartida entre múltiples procesos/hosts con bloqueo coordinado.
