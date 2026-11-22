@@ -39,7 +39,7 @@ class RAGService:
         found = self.retriever.search(question, top_k or self.settings.top_k, category,
                                       mode=mode, trust=trust, source_id=source_id, expand=expand,
                                       firmware_version=firmware_version, version_policy=version_policy,
-                                      rerank=rerank
+                                      rerank=rerank)
         hits = found["results"]
         if not hits:
             return {"answer": "No encuentro suficiente evidencia en el índice. Sincroniza las fuentes oficiales o cambia los filtros.",
