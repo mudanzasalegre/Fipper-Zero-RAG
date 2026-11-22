@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Development Assistant · Flipper Zero RAG</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#0a1120;color:#e9f0fd}*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 10% 0%,#122842,#0a1120 55%)}
+a{color:#92baff}header{border-bottom:1px solid #33435e;background:#0e1a2bbf}header .wrap{max-width:1200px;margin:auto;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-weight:800;font-size:21px}.brand small{font-size:12px;display:block;color:#9eb0c8;font-weight:500}nav{display:flex;gap:14px;font-size:14px}
+main{max-width:1200px;padding:28px 24px 55px;margin:auto}.heading{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;align-items:end;margin-bottom:24px}
+h1{font-size:clamp(24px,3vw,36px);margin:0 0 9px}.sub{color:#a7b6ce;max-width:650px;line-height:1.5;margin:0}
+.badge{font:12px monospace;background:#14342d;color:#a9e3c1;padding:7px 11px;border:1px solid #377a68;border-radius:40px}
+.tabs{display:flex;gap:8px;margin:0 0 18px;flex-wrap:wrap}.tabs button,button{font:inherit;color:#edf4fc;background:#1e3654;border:1px solid #486582;border-radius:9px;cursor:pointer;padding:10px 14px}
+.tabs button[aria-selected="true"]{background:#6bb7ff;color:#081626;border-color:#6bb7ff}button:hover{filter:brightness(1.15)}
+.layout{display:grid;grid-template-columns:minmax(225px,300px) 1fr;gap:16px}.panel{background:#111e32;border:1px solid #30425c;border-radius:14px;padding:20px;min-width:0}
+.items{display:flex;gap:8px;flex-direction:column}.items button{text-align:left;background:#15263e}.items button.active{border-color:#6bb7ff;box-shadow:0 0 0 1px #6bb7ff inset}
+.item-title{display:block;font-weight:700}.item-sub{font-size:12px;display:block;color:#a8b7cf;margin-top:3px}.muted{color:#9eb0ca;font-size:13px}
+pre{background:#07111f;border:1px solid #23374e;border-radius:8px;padding:14px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.5}
+input,textarea,select{width:100%;background:#091627;color:#eff5fd;border:1px solid #50617c;border-radius:9px;padding:10px;font:inherit}textarea{font:13px/1.5 ui-monospace,Consolas,monospace;min-height:200px;resize:vertical}
+label{display:block;margin:13px 0 8px;font-size:13px;color:#bfd0e7}h2{font-size:20px;margin:0 0 10px}h3{font-size:16px;margin:20px 0 10px}p{line-height:1.5}ul{padding-left:20px}li{margin:6px 0}
+footer{margin-top:20px;color:#9eb0c9;font-size:12px}.ok{color:#a5ecbe}.warn{color:#f6c691}.error{color:#ffb5b5}.columns{display:grid;grid-template-columns:1fr 1fr;gap:14px}section[hidden]{display:none}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.columns{grid-template-columns:1fr}}
+</style></head>
+<body><header><div class="wrap"><div class="brand">◈ Flipper Zero RAG <small>v0.8 · Development Assistant</small></div><nav><a href="/">RAG</a><a href="/ontology">Protocolos</a><a href="/firmware">Firmware</a><a href="/api/docs">API</a></nav></div></header>
+<main><div class="heading"><div><h1>Tu laboratorio de desarrollo</h1><p class="sub">Ejemplos verificables de Furi y JavaScript, documentación oficial y análisis estático de código. Sin despliegues al Flipper ni ejecución de compilaciones desde el navegador.</p></div><span class="badge">Offline-first · Fuentes citadas</span></div>
+<div class="tabs" role="tablist"><button aria-selected="true" data-section="templates">Plantillas</button><button aria-selected="false" data-section="guides">Guías</button><button aria-selected="false" data-section="validation">Validar código</button></div>
+<section id="templates"><div class="layout"><aside class="panel"><h2>Ejemplos</h2><div id="template-list" class="items"><p class="muted">Cargando...</p></div></aside><article class="panel" id="template-detail" aria-live="polite"><p class="muted">Selecciona una plantilla.</p></article></div></section>
+<section id="guides" hidden><div class="layout"><aside class="panel"><h2>Documentación</h2><div id="guide-list" class="items"></div></aside><article class="panel" id="guide-detail"><p class="muted">Selecciona una guía.</p></article></div></section>
+<section id="validation" hidden><div class="panel"><h2>Validador estático</h2><p class="muted">El código se procesa en un directorio temporal local. No se ejecuta, compila, transmite ni guarda como proyecto permanente. No pegues secretos ni volcados de tarjetas.</p>
+<div class="columns"><div><label for="kind">Tipo de proyecto</label><select id="kind"><option value="mjs">Script JavaScript mJS</option><option value="fap">Aplicación C FAP</option></select>
+<label for="src">main.js o app.c</label><textarea id="src" spellcheck="false">print("Hello, Flipper!");</textarea></div><div><label for="fam">application.fam (solo FAP)</label><textarea id="fam" spellcheck="false" placeholder='App(appid="example_app", apptype=FlipperAppType.EXTERNAL, entry_point="example_app_app")' disabled></textarea>
+<p class="muted">La validación comprueba estructura, llamadas y manifiesto; no sustituye el compilador del SDK ni garantiza compatibilidad con la versión del dispositivo.</p><button id="run-validation">Validar sin ejecutar</button></div></div>
+<h3>Informe</h3><pre id="validation-output" aria-live="polite">Aún no hay informe.</pre></div></section>
+<footer>Proyecto independiente, no afiliado a Flipper Devices. Las plantillas son ejemplos originales; la compilación y pruebas reales requieren un SDK local compatible.</footer></main>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const el = (tag,text,cls) => {const e=document.createElement(tag); if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e};
+function paragraph(parent,text,cls=''){parent.appendChild(el('p',text,cls))}
+function title(parent,text,tag='h2'){parent.appendChild(el(tag,text))}
+function safeLink(parent,href,label){if(!/^https:\/\/(developer\.flipper\.net|github\.com)\//.test(href))return;const a=el('a',label);a.href=href;a.target='_blank';a.rel='noopener noreferrer';parent.appendChild(a)}
+async function get(url){const response=await fetch(url);if(!response.ok)throw Error('HTTP '+response.status);return response.json()}
+async function showTemplate(item){const detail=$('template-detail');detail.replaceChildren();title(detail,item.title);paragraph(detail,item.description);paragraph(detail,`${item.language.toUpperCase()} · ${item.kind} · ${item.id}`,'muted');
+ const full=await get('/api/development/templates/'+encodeURIComponent(item.id));const files=full.files||{};
+ for(const [filename,body] of Object.entries(files)){title(detail,filename,'h3');detail.appendChild(el('pre',body))}
+ title(detail,'Crear en tu PC','h3');detail.appendChild(el('pre',`flipper-rag dev scaffold --template ${item.id} --appid my_app --output ./my_app\nflipper-rag dev validate --project ./my_app${item.kind==='fap'?'\nflipper-rag dev build --project ./my_app  # dry-run\nflipper-rag dev build --project ./my_app --execute':''}`));
+ title(detail,'Fuentes oficiales','h3');const list=el('ul');for(const ref of item.references){const li=el('li');safeLink(li,ref,ref);list.appendChild(li)}detail.appendChild(list)}
+async function initialize(){try {const [t,g]=await Promise.all([get('/api/development/templates'),get('/api/development/guides')]);
+ $('template-list').replaceChildren();for(const [i,item] of t.templates.entries()){const b=el('button');const h=el('span',item.title,'item-title');const s=el('span',item.language+' · '+item.kind,'item-sub');b.append(h,s);b.onclick=()=>{document.querySelectorAll('#template-list button').forEach(x=>x.classList.remove('active'));b.classList.add('active');showTemplate(item).catch(e=>paragraph($('template-detail'),String(e),'error'))};$('template-list').appendChild(b);if(!i)b.click()}
+ $('guide-list').replaceChildren();for(const [i,item] of g.guides.entries()){const b=el('button');b.append(el('span',item.title,'item-title'),el('span',item.tags.join(' · '),'item-sub'));b.onclick=()=>{document.querySelectorAll('#guide-list button').forEach(x=>x.classList.remove('active'));b.classList.add('active');const d=$('guide-detail');d.replaceChildren();title(d,item.title);paragraph(d,item.summary);title(d,'Referencias oficiales','h3');const ul=el('ul');for(const ref of item.references){const li=el('li');safeLink(li,ref,ref);ul.appendChild(li)}d.appendChild(ul)};$('guide-list').appendChild(b);if(!i)b.click()}
+ }catch(e){paragraph($('template-detail'),'No se ha podido cargar el catálogo: '+String(e),'error')}}
+document.querySelectorAll('[data-section]').forEach(b=>b.onclick=()=>{for(const item of document.querySelectorAll('[data-section]')){item.setAttribute('aria-selected',String(item===b));$(item.dataset.section).hidden=item!==b}});
+$('kind').onchange=()=>{$('fam').disabled=$('kind').value!=='fap'};
+$('run-validation').onclick=async()=>{const kind=$('kind').value;const files=kind==='fap'?{'application.fam':$('fam').value,'app.c':$('src').value}:{'main.js':$('src').value};const out=$('validation-output');out.textContent='Analizando…';try {const res=await fetch('/api/development/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind,files})});out.textContent=JSON.stringify(await res.json(),null,2)}catch(e){out.textContent='Error: '+String(e)}};
+initialize();
+</script></body></html>

@@ -10,6 +10,7 @@ from .sources import load_catalog, index_documents, local_documents, web_documen
 from .retrieval import Retriever
 from .protocol_intelligence import add_parser as add_ontology_parser, cli_result as ontology_cli_result
 from .firmware_cli import add_parser as add_firmware_parser, run as run_firmware_cli
+from .development_cli import add_parser as add_development_parser, run as run_development_cli
 from .service import RAGService
 from .protocols import all_protocols, get_protocol, search_protocols, protocol_documents, SOURCE_ID
 
@@ -97,6 +98,7 @@ def main(argv: list[str] | None = None):
                           help="Fail when recall is below threshold (0..1)")
     add_ontology_parser(sub)
     add_firmware_parser(sub)
+    add_development_parser(sub)
     args = p.parse_args(argv)
     settings = Settings()
     store = Store(settings.db_path)
@@ -183,6 +185,16 @@ def main(argv: list[str] | None = None):
                 store.record_sync(spec["id"], error)
                 overall.append((spec["id"], error))
         print(json.dumps(dict(overall), indent=2, ensure_ascii=False))
+    elif args.command == "dev":
+        try:
+            result = run_development_cli(args, store, embedder)
+        except ValueError as exc:
+            p.error(str(exc))
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        if args.dev_action in {"validate", "build", "smoke"} and (
+                ("valid" in result and not result["valid"])
+                or result.get("status") in {"invalid", "failed", "timeout", "no-artifact"}):
+            raise SystemExit(1)
     elif args.command == "firmware":
         try:
             result = run_firmware_cli(args, store, embedder)

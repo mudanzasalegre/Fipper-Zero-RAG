@@ -339,6 +339,21 @@
       "url": "https://developer.flipper.net/flipperzero/doxygen/pages.html",
       "category": "development",
       "title": "Índice de referencias de desarrollo"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/app_dev_your_first_app_in_c.html",
+      "category": "development",
+      "title": "Primer programa C con uFBT"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/app_dev_gui.html",
+      "category": "development",
+      "title": "GUI Furi y ViewPort"
+    },
+    {
+      "url": "https://developer.flipper.net/flipperzero/doxygen/app_dev_debugging_faps.html",
+      "category": "development",
+      "title": "Depuración de FAP"
     }
   ],
   "git": [

@@ -64,3 +64,11 @@
 - CLI/API de solo lectura, sin acciones sobre hardware, tests temporales con releases simuladas.
 
 Ver [documentación de la v0.7](FIRMWARE_GRAPH_V07.md). No se ha ejecutado un benchmark de precisión semántica sobre el firmware oficial completo; la resolución de C/C++ no equivale a la de un compilador.
+
+## v0.8 — Development Assistant
+
+- 7 ejemplos originales Furi/C y JavaScript mJS, 7 guías con referencias oficiales.
+- Scaffold, validación estática FAM sin ejecución, y comprobación opcional de exports a partir de v0.7.
+- CLI `dev`, interfaz `/development`, API de consulta/validación y fuentes indexables en RAG.
+- Compilación local de pruebas con uFBT bajo `--execute`, reportes SHA-256 y workflow manual de compilación real.
+- Pendiente: compilar los ejemplos con la SDK oficial en GitHub Actions / PC y probar en un Flipper propio; la CI estándar no es prueba de dispositivo.

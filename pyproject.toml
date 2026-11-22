@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "flipperzero-rag"
-version = "0.7.0"
+version = "0.8.0"
 description = "Local, source-grounded RAG assistant for the Flipper Zero ecosystem"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -26,7 +26,7 @@ flipper-rag = "flipper_rag.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-flipper_rag = ["web/*.html", "data/*.json"]
+flipper_rag = ["web/*.html", "data/*.json", "data/dev_templates/*/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

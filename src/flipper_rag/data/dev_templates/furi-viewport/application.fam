@@ -1,0 +1,10 @@
+App(
+    appid="{{APP_ID}}",
+    apptype=FlipperAppType.EXTERNAL,
+    name="{{APP_NAME}}",
+    entry_point="{{ENTRY}}",
+    stack_size=2048,
+    fap_category="Examples",
+    fap_description="Safe viewport and Back button example",
+    sources=["{{APP_ID}}.c"],
+)

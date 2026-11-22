@@ -326,3 +326,23 @@ uvicorn flipper_rag.api:app --host 127.0.0.1 --port 8000
 ```
 
 Abre `http://127.0.0.1:8000/firmware` para explorar símbolos y relaciones. **Advertencia:** las llamadas y referencias C son análisis estático heurístico; la existencia de una función no garantiza su exportación para FAP ni funcionamiento en el dispositivo. Las comparaciones API incompletas se señalan y no se interpretan como ausencia de cambios. Consulta [diseño, seguridad, alcance y limitaciones](docs/FIRMWARE_GRAPH_V07.md).
+
+## v0.8 — Development Assistant (22-11-2026)
+
+Nuevo **[Development Assistant](http://127.0.0.1:8000/development)**: siete plantillas originales (3 C/Furi FAP y 4 scripts mJS), siete guías citadas, generación de proyectos, validación estática y compilación opt-in con uFBT. La comprobación de API puede consultar el grafo de firmware v0.7; las guías no certifican compatibilidad de firmware.
+
+```bash
+flipper-rag dev templates
+flipper-rag dev guides
+flipper-rag dev scaffold --template furi-dialog --appid demo_app --output ./demo_app
+flipper-rag dev validate --project ./demo_app
+flipper-rag dev build --project ./demo_app             # simulación: no ejecuta
+python -m pip install ufbt
+flipper-rag dev build --project ./demo_app --execute   # compilación local real
+flipper-rag dev index                                 # indexa guías originales en el RAG
+uvicorn flipper_rag.api:app --host 127.0.0.1 --port 8000
+```
+
+La compilación **solo** está disponible en CLI local con `--execute`. Puede descargar SDK y ejecutar código de build; usa únicamente proyectos de confianza. Nunca ejecuta `launch`, `flash_usb` ni controla hardware. La API web solo consulta y valida. Para compilar realmente los tres FAP de prueba en GitHub, activa manualmente **Actions → Development assistant - real FAP smoke build → Run workflow**. La suite CI ordinaria usa un ejecutable simulado para los tests del runner.
+
+[Especificación técnica v0.8](docs/DEVELOPMENT_ASSISTANT_V08.md) · [uFBT oficial](https://github.com/flipperdevices/flipperzero-ufbt) · [Desarrollo de apps](https://developer.flipper.net/flipperzero/doxygen/applications.html) · [JavaScript SDK](https://developer.flipper.net/flipperzero/doxygen/js_developing_apps_using_js_sdk.html)
