@@ -1,0 +1,18 @@
+{"question":"¿Qué protocolos usan la familia NFC?","filters":{"family":"nfc"},"expect_ids":["iso-14443-3a","mifare-classic","mifare-desfire","iso-15693"]}
+{"question":"¿Qué interfaces se clasifican como GPIO?","filters":{"family":"gpio"},"expect_ids":["uart","spi","i2c"]}
+{"question":"¿Qué representa la frecuencia nominal de 13.56 MHz?","filters":{"frequency_hz":13560000},"expect_ids":["mifare-classic","ntag213","mifare-desfire"],"exclude_ids":["em4100"]}
+{"question":"¿Qué protocolos operan en la familia RFID 125 kHz?","filters":{"frequency_hz":125000},"expect_ids":["em4100","hid-h10301"],"exclude_ids":["iso-14443-3a"]}
+{"question":"¿Qué formatos son .ir?","filters":{"file_format":".ir"},"expect_ids":["nec","rc5","rc6"]}
+{"question":"¿Qué protocolos están listados para analizar IR parsed?","filters":{"family":"infrared","capability":"parse_file","status":"documented"},"expect_ids":["nec","kaseikyo","sirc20"]}
+{"question":"¿Qué protocolos RFID enumeran soporte de lectura?","filters":{"family":"lf-rfid","capability":"read","status":"documented"},"expect_ids":["em4100","hid-h10301"]}
+{"question":"¿Cuáles tienen emulación de datos limitada?","filters":{"capability":"emulate_data","status":"limited"},"expect_ids":["mifare-classic","mifare-ultralight","ntag213"],"exclude_ids":["mifare-desfire"]}
+{"question":"¿Qué protocolos documentan emulación de datos no soportada?","filters":{"capability":"emulate_data","status":"not_supported"},"expect_ids":["mifare-desfire"],"exclude_ids":["mifare-classic"]}
+{"question":"¿Se ha verificado transmisión en KeeLoq a partir de dev?","filters":{"family":"sub-ghz","capability":"transmit","status":"documented"},"should_be_empty":true}
+{"question":"¿Tiene ISO 15693 emulación de datos general documentada?","filters":{"family":"nfc","query":"ISO 15693","capability":"emulate_data","status":"documented"},"should_be_empty":true}
+{"question":"Buscar protocolos de memoria por páginas","filters":{"feature":"page-memory"},"expect_ids":["mifare-ultralight","ntag213","ntag216"],"exclude_ids":["mifare-desfire"]}
+{"question":"Buscar protocolo de fichero RAW Sub-GHz","filters":{"feature":"raw-signal"},"expect_ids":["subghz-raw","subghz-bin-raw"]}
+{"question":"Localizar el ejemplo concreto Princeton","filters":{"family":"sub-ghz","capability":"parse_file","status":"documented"},"expect_ids":["subghz-princeton","subghz-raw"]}
+{"question":"Buscar por módulo NFC y serial a la vez imposible","filters":{"family":"nfc","feature":"usb-serial"},"should_be_empty":true}
+{"question":"Señales no confirmadas por código fuente","filters":{"family":"sub-ghz","capability":"source_identified","status":"documented"},"expect_ids":["subghz-princeton","subghz-keeloq"]}
+{"question":"Falta evidencia para lectura de todos los protocolos IR","filters":{"family":"infrared","capability":"read","status":"documented"},"should_be_empty":true}
+{"question":"Relacionar DESFire con 14443-4A","filters":{"related_to":"iso-14443-4a"},"expect_ids":["mifare-desfire"]}

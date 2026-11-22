@@ -38,3 +38,18 @@
 - Recalibración y optimización de reranker multilingüe sobre preguntas de firmware.
 - Políticas de versiones más avanzadas: comparación de cambios de símbolos/API entre tags, diffs por release.
 - Cache ANN transaccional compartida entre múltiples procesos/hosts con bloqueo coordinado.
+
+
+### Realizado en v0.6 — Protocol Intelligence
+
+- Ontología no invasiva de 118 identificadores, 9 familias, 35 perfiles y 27 relaciones curatoriales.
+- Matriz de capacidades con estados verificables (`documented`, `limited`, `not_supported`, `unknown`), enlace y ámbito de prueba por afirmación.
+- Búsqueda por características, comparador de 2–8 protocolos, navegación del grafo y exportación JSON-LD.
+- API de lectura y consola `/ontology`, indexación editorial opcional y benchmark offline con controles negativos.
+- Conservación de incertidumbre: no inferir compatibilidad de release a partir de documentación sin versión o del registro `dev`.
+
+### Posterior a v0.6
+
+- Extraer pruebas automatizadas de cambios en símbolos C por versión (v0.7).
+- Verificar compatibilidad real de dispositivos y firmware en entornos autorizados; el RAG no certifica hardware.
+- Ampliar evidencias individualizadas para los protocolos cuyo único origen es un registro fuente.

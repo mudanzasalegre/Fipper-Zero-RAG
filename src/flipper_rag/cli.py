@@ -8,6 +8,7 @@ from .models import Embedder, ChatModel, ModelUnavailable
 from .storage import Store
 from .sources import load_catalog, index_documents, local_documents, web_documents, git_documents
 from .retrieval import Retriever
+from .protocol_intelligence import add_parser as add_ontology_parser, cli_result as ontology_cli_result
 from .service import RAGService
 from .protocols import all_protocols, get_protocol, search_protocols, protocol_documents, SOURCE_ID
 
@@ -93,6 +94,7 @@ def main(argv: list[str] | None = None):
     evaluate.add_argument("--json-output", type=Path, help="Write complete machine-readable report")
     evaluate.add_argument("--min-recall", type=float, default=0.0,
                           help="Fail when recall is below threshold (0..1)")
+    add_ontology_parser(sub)
     args = p.parse_args(argv)
     settings = Settings()
     store = Store(settings.db_path)
@@ -179,6 +181,14 @@ def main(argv: list[str] | None = None):
                 store.record_sync(spec["id"], error)
                 overall.append((spec["id"], error))
         print(json.dumps(dict(overall), indent=2, ensure_ascii=False))
+    elif args.command == "ontology":
+        try:
+            result = ontology_cli_result(args, store, embedder)
+        except ValueError as exc:
+            p.error(str(exc))
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        if args.action == "eval" and not result["passed"]:
+            raise SystemExit(1)
     elif args.command == "stats":
         print(json.dumps(store.stats(), indent=2, ensure_ascii=False))
     elif args.command == "runs":

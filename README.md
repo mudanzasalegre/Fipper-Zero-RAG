@@ -284,3 +284,23 @@ Código propio del RAG: MIT (ver `LICENSE`). Las marcas Flipper, Flipper Zero y 
 Código fuente y contribuciones: [mudanzasalegre/Fipper-Zero-RAG](https://github.com/mudanzasalegre/Fipper-Zero-RAG). La ruta remota mantiene el nombre `Fipper` elegido al crear el repositorio; internamente la aplicación se denomina Flipper Zero RAG.
 
 Documentación complementaria: [Investigación](docs/RESEARCH.md) · [Instalación Windows 11](docs/INSTALL_WINDOWS.md) · [Evaluación](docs/RETRIEVAL_EVAL.md) · [Roadmap](docs/ROADMAP.md).
+
+
+## v0.6 — Protocol Intelligence (2026-11-22)
+
+**Ontología verificable:** se mantienen los 118 identificadores de v0.5, con 9 familias, 35 perfiles enriquecidos, 27 relaciones documentadas y 4 reglas de clasificación conservadoras. Incluye comparación de capacidades con evidencias, búsqueda por características y contexto físico, navegación del grafo, exportación JSON/JSON-LD, API y panel `/ontology`. La presencia de un símbolo Sub-GHz en `dev` **no** prueba transmisión ni soporte en la release del usuario.
+
+```bash
+flipper-rag ontology validate
+flipper-rag ontology search --family nfc --feature page-memory
+flipper-rag ontology search --capability emulate_data --status limited
+flipper-rag ontology show mifare-desfire
+flipper-rag ontology compare mifare-classic mifare-desfire
+flipper-rag ontology related iso-14443-3a --depth 2
+flipper-rag ontology graph --format jsonld
+flipper-rag ontology eval --file benchmarks/ontology_v06.jsonl
+flipper-rag ontology index
+uvicorn flipper_rag.api:app --port 8000  # http://127.0.0.1:8000/ontology
+```
+
+**Compatibilidad:** si se indica `--firmware-version`, las capacidades generales sin una evidencia coincidente pasan a estado **unknown** para esa versión, conservando su documentación general por separado. No se validan dispositivos físicos ni cumplimiento de reglas regionales. Para ejemplos de garantías y límites, consulta [la especificación y fuentes v0.6](docs/ONTOLOGY_V06.md).

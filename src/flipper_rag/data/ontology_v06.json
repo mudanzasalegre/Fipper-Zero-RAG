@@ -1,0 +1,993 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-11-22",
+  "families": {
+    "nfc": {
+      "label": "NFC de alta frecuencia",
+      "medium": "inductive-hf",
+      "evidence": {
+        "reference": "https://docs.flipper.net/zero/development/hardware/tech-specs",
+        "scope": "family",
+        "note": "NFC: familia de 13,56 MHz y transceptor ST25R3916; no certifica cada operación de cada tarjeta"
+      },
+      "format": ".nfc",
+      "frequency_hz": 13560000
+    },
+    "lf-rfid": {
+      "label": "RFID LF 125 kHz",
+      "medium": "inductive-lf",
+      "evidence": {
+        "reference": "https://docs.flipper.net/zero/rfid/read",
+        "scope": "family",
+        "note": "Familia RFID de 125 kHz; los formatos y las capacidades varían según la tarjeta"
+      },
+      "format": ".rfid",
+      "frequency_hz": 125000
+    },
+    "sub-ghz": {
+      "label": "Radio Sub-GHz",
+      "medium": "radio-subghz",
+      "evidence": {
+        "reference": "https://docs.flipper.net/zero/sub-ghz",
+        "scope": "family",
+        "note": "Radio del dispositivo entre 300 y 928 MHz; frecuencias TX dependen de la región y los protocolos no son universales"
+      },
+      "format": ".sub",
+      "frequency_range_hz": [
+        300000000,
+        928000000
+      ]
+    },
+    "infrared": {
+      "label": "Infrarrojos",
+      "medium": "infrared-optical",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+        "scope": "family",
+        "note": "Mandos IR con variantes parsed y raw; frecuencia de portadora depende del formato y la señal"
+      },
+      "format": ".ir"
+    },
+    "ibutton": {
+      "label": "Llaves de contacto iButton",
+      "medium": "contact-key",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+        "scope": "family",
+        "note": "Formatos Dallas, Cyfral y Metakom; no todos los tipos son equivalentes a 1-Wire"
+      },
+      "format": ".ibtn"
+    },
+    "gpio": {
+      "label": "Interfaces GPIO",
+      "medium": "wired-digital",
+      "evidence": {
+        "reference": "https://docs.flipper.net/zero/gpio-and-modules",
+        "scope": "family",
+        "note": "Los pines GPIO permiten buses y UART con límites eléctricos; la implementación depende del periférico"
+      }
+    },
+    "expansion": {
+      "label": "Expansión y RPC",
+      "medium": "wired-serial",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/expansion_protocol.html",
+        "scope": "family",
+        "note": "Las funciones del protocolo de expansión dependen del firmware y el módulo"
+      }
+    },
+    "bluetooth": {
+      "label": "Bluetooth Low Energy",
+      "medium": "wireless-ble",
+      "evidence": {
+        "reference": "https://docs.flipper.net/zero/development/hardware/tech-specs",
+        "scope": "family",
+        "note": "Interfaz BLE del hardware; servicio y perfil concretos no se infieren aquí"
+      }
+    },
+    "usb": {
+      "label": "USB",
+      "medium": "wired-usb",
+      "evidence": {
+        "reference": "https://docs.flipper.net/zero/development/hardware/tech-specs",
+        "scope": "family",
+        "note": "Interfaz física USB; las clases CDC/HID son interfaces diferentes"
+      }
+    }
+  },
+  "rules": [
+    {
+      "family": "lf-rfid",
+      "evidence_scope": "official-reader-list",
+      "features": [
+        "listed-read-protocol",
+        "low-frequency"
+      ],
+      "capabilities": {
+        "read": {
+          "status": "documented",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/rfid/read",
+            "scope": "protocol",
+            "note": "Se enumera explícitamente en la lista oficial de protocolos de lectura; no acredita acceso a memoria protegida"
+          }
+        },
+        "save": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/rfid/read",
+            "scope": "family",
+            "note": "Guardar el identificador leído depende de que el protocolo se reconozca; no equivale a copiar todas las funciones"
+          }
+        }
+      }
+    },
+    {
+      "family": "infrared",
+      "evidence_scope": "file-format-listed",
+      "features": [
+        "parsed-ir-file"
+      ],
+      "capabilities": {
+        "parse_file": {
+          "status": "documented",
+          "evidence": {
+            "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+            "scope": "file-format",
+            "note": "El identificador figura en la lista de protocolos que admite el formato IR parsed"
+          }
+        }
+      }
+    },
+    {
+      "family": "ibutton",
+      "evidence_scope": "file-format-listed",
+      "features": [
+        "ibutton-key-format"
+      ],
+      "capabilities": {
+        "parse_file": {
+          "status": "documented",
+          "evidence": {
+            "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+            "scope": "file-format",
+            "note": "Protocolo incluido en el formato de claves iButton; los campos son específicos de cada tipo"
+          }
+        }
+      }
+    },
+    {
+      "family": "sub-ghz",
+      "evidence_scope": "dev-source-registry",
+      "features": [
+        "listed-in-dev-registry"
+      ],
+      "capabilities": {
+        "source_identified": {
+          "status": "documented",
+          "evidence": {
+            "reference": "https://github.com/flipperdevices/flipperzero-firmware/blob/e459e2d939db7f292d7dcfe6935b8fb2641409e3/lib/subghz/protocols/protocol_items.c",
+            "scope": "dev-snapshot",
+            "note": "El identificador está registrado en este commit concreto de dev; no prueba que una release lo decodifique o pueda transmitirlo."
+          }
+        }
+      }
+    }
+  ],
+  "profiles": {
+    "iso-14443-3a": {
+      "features": [
+        "nfc-a",
+        "uid-atqa-sak"
+      ],
+      "capabilities": {
+        "parse_file": {
+          "status": "documented",
+          "evidence": {
+            "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+            "scope": "file-format",
+            "note": "El encabezado NFC 14443-3A describe UID, ATQA y SAK en el formato"
+          }
+        }
+      },
+      "notes": [
+        "ISO 14443-3A es una capa de identificación; no garantiza autenticación de aplicaciones ni emulación completa."
+      ],
+      "attributes": {
+        "identifier-fields": {
+          "value": "UID, ATQA, SAK",
+          "evidence": {
+            "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+            "scope": "file-format",
+            "note": "Campos que documenta el formato 14443-3A"
+          }
+        }
+      }
+    },
+    "iso-14443-3b": {
+      "features": [
+        "nfc-b",
+        "uid-protocol-info"
+      ],
+      "capabilities": {
+        "parse_file": {
+          "status": "documented",
+          "evidence": {
+            "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+            "scope": "file-format",
+            "note": "El formato 14443-3B incluye UID, application data y protocol info"
+          }
+        }
+      }
+    },
+    "iso-14443-4a": {
+      "features": [
+        "nfc-a",
+        "iso-dep",
+        "ats"
+      ],
+      "capabilities": {
+        "parse_file": {
+          "status": "documented",
+          "evidence": {
+            "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+            "scope": "file-format",
+            "note": "El formato 14443-4A incluye ATS además de UID, ATQA y SAK"
+          }
+        }
+      }
+    },
+    "iso-15693": {
+      "features": [
+        "nfc-v",
+        "icode-family"
+      ],
+      "notes": [
+        "El manual oficial menciona ICODE SLIX y tarjetas NFC-V; eso no acredita toda ISO 15693 ni todas sus funciones en una release."
+      ]
+    },
+    "mifare-classic": {
+      "features": [
+        "nfc-a",
+        "sector-memory",
+        "authenticated-sectors"
+      ],
+      "capabilities": {
+        "read": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "Se pueden leer sectores cuando están disponibles las claves; los sectores no desbloqueados quedan sin leer"
+          }
+        },
+        "emulate_data": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "La emulación de MIFARE Classic solo abarca sectores desbloqueados"
+          }
+        },
+        "parse_file": {
+          "status": "documented",
+          "evidence": {
+            "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+            "scope": "file-format",
+            "note": "El formato NFC guarda bloques de memoria MIFARE Classic"
+          }
+        }
+      },
+      "notes": [
+        "Lectura incompleta y emulación de contenido completo no son equivalentes."
+      ]
+    },
+    "mifare-ultralight": {
+      "features": [
+        "nfc-a",
+        "page-memory",
+        "ntag-family"
+      ],
+      "capabilities": {
+        "read": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "Se leen páginas abiertas o accesibles con credenciales legítimas"
+          }
+        },
+        "emulate_data": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "Solo se emulan páginas que fueron leídas"
+          }
+        },
+        "parse_file": {
+          "status": "documented",
+          "evidence": {
+            "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+            "scope": "file-format",
+            "note": "El formato conserva páginas y metadatos NTAG/Ultralight"
+          }
+        }
+      }
+    },
+    "mifare-desfire": {
+      "features": [
+        "nfc-a",
+        "application-files",
+        "iso-dep"
+      ],
+      "capabilities": {
+        "read": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "Se guardan aplicaciones y archivos no protegidos; los protegidos no se leen sin autorización"
+          }
+        },
+        "emulate_uid": {
+          "status": "documented",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "La documentación oficial limita la emulación DESFire al UID"
+          }
+        },
+        "emulate_data": {
+          "status": "not_supported",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "La documentación oficial dice que en DESFire solo se emula UID, no los archivos de aplicación"
+          }
+        },
+        "parse_file": {
+          "status": "documented",
+          "evidence": {
+            "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+            "scope": "file-format",
+            "note": "El formato NFC almacena campos y archivos de DESFire"
+          }
+        }
+      },
+      "notes": [
+        "Un UID emulado no reemplaza un protocolo de aplicación DESFire."
+      ]
+    },
+    "ntag213": {
+      "features": [
+        "ntag-family",
+        "page-memory",
+        "nfc-a"
+      ],
+      "capabilities": {
+        "read": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "La lectura de NTAG está condicionada a páginas abiertas y permisos configurados"
+          }
+        },
+        "emulate_data": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "Solo se emulan páginas leídas de NTAG"
+          }
+        },
+        "write": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "La escritura a otra NTAG del mismo tipo está condicionada a modelo compatible y páginas desbloqueadas"
+          }
+        }
+      },
+      "notes": [
+        "No se garantiza poder escribir una etiqueta protegida por contraseña."
+      ]
+    },
+    "ntag215": {
+      "features": [
+        "ntag-family",
+        "page-memory",
+        "nfc-a"
+      ],
+      "capabilities": {
+        "read": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "La lectura de NTAG está condicionada a páginas abiertas y permisos configurados"
+          }
+        },
+        "emulate_data": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "Solo se emulan páginas leídas de NTAG"
+          }
+        },
+        "write": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "La escritura a otra NTAG del mismo tipo está condicionada a modelo compatible y páginas desbloqueadas"
+          }
+        }
+      },
+      "notes": [
+        "No se garantiza poder escribir una etiqueta protegida por contraseña."
+      ]
+    },
+    "ntag216": {
+      "features": [
+        "ntag-family",
+        "page-memory",
+        "nfc-a"
+      ],
+      "capabilities": {
+        "read": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "La lectura de NTAG está condicionada a páginas abiertas y permisos configurados"
+          }
+        },
+        "emulate_data": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "Solo se emulan páginas leídas de NTAG"
+          }
+        },
+        "write": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/nfc/read",
+            "scope": "protocol",
+            "note": "La escritura a otra NTAG del mismo tipo está condicionada a modelo compatible y páginas desbloqueadas"
+          }
+        }
+      },
+      "notes": [
+        "No se garantiza poder escribir una etiqueta protegida por contraseña."
+      ]
+    },
+    "nfc-felica": {
+      "features": [
+        "nfc-f",
+        "felica"
+      ],
+      "notes": [
+        "FeliCa Lite-S tiene capacidades documentadas específicas; no generalizarlo a todas las variantes FeliCa."
+      ]
+    },
+    "hid-iclass-picopass": {
+      "features": [
+        "nfc-hf",
+        "picopass"
+      ],
+      "notes": [
+        "La ficha técnica cita iCLASS/Picopass, pero no acredita escritura o emulación de datos protegidos."
+      ]
+    },
+    "em4100": {
+      "features": [
+        "identification-only",
+        "low-frequency"
+      ],
+      "notes": [
+        "Las distintas variantes EM4100 no son tarjetas con memoria de aplicación arbitraria."
+      ]
+    },
+    "em4100-32": {
+      "features": [
+        "identification-only",
+        "low-frequency"
+      ],
+      "notes": [
+        "Las distintas variantes EM4100 no son tarjetas con memoria de aplicación arbitraria."
+      ]
+    },
+    "em4100-16": {
+      "features": [
+        "identification-only",
+        "low-frequency"
+      ],
+      "notes": [
+        "Las distintas variantes EM4100 no son tarjetas con memoria de aplicación arbitraria."
+      ]
+    },
+    "nec": {
+      "features": [
+        "infrared-protocol",
+        "parsed-ir-file"
+      ],
+      "notes": [
+        "NEC es un identificador de protocolo IR parsed, no una frecuencia de portadora universal."
+      ]
+    },
+    "rc5": {
+      "features": [
+        "infrared-protocol",
+        "parsed-ir-file"
+      ]
+    },
+    "rc6": {
+      "features": [
+        "infrared-protocol",
+        "parsed-ir-file"
+      ]
+    },
+    "ds1990": {
+      "features": [
+        "dallas-1wire",
+        "identifier-rom"
+      ],
+      "notes": [
+        "La ROM de DS1990 no implica que otras llaves Dallas sean grabables."
+      ]
+    },
+    "ds1992": {
+      "features": [
+        "dallas-1wire",
+        "sram-data"
+      ],
+      "notes": [
+        "DS1992 define SRAM además de ROM según el formato de llaves."
+      ]
+    },
+    "ds1996": {
+      "features": [
+        "dallas-1wire",
+        "sram-data"
+      ]
+    },
+    "ds1971": {
+      "features": [
+        "dallas-1wire",
+        "eeprom-data"
+      ]
+    },
+    "dsgeneric": {
+      "features": [
+        "dallas-1wire",
+        "rom-only-format"
+      ]
+    },
+    "1-wire": {
+      "features": [
+        "physical-bus",
+        "contact-key"
+      ],
+      "notes": [
+        "1-Wire es un bus; no lo equipares con las codificaciones Cyfral o Metakom."
+      ]
+    },
+    "subghz-princeton": {
+      "features": [
+        "subghz-key-file",
+        "key-and-bit-fields"
+      ],
+      "capabilities": {
+        "parse_file": {
+          "status": "documented",
+          "evidence": {
+            "reference": "https://developer.flipper.net/flipperzero/doxygen/subghz_file_format.html",
+            "scope": "file-format",
+            "note": "El ejemplo de archivo .sub para Princeton incluye Bit, Key y TE"
+          }
+        }
+      },
+      "notes": [
+        "La frecuencia 433,92 MHz de un ejemplo .sub no demuestra una frecuencia exclusiva de Princeton."
+      ]
+    },
+    "subghz-raw": {
+      "features": [
+        "raw-signal",
+        "not-decoded"
+      ],
+      "capabilities": {
+        "parse_file": {
+          "status": "documented",
+          "evidence": {
+            "reference": "https://developer.flipper.net/flipperzero/doxygen/subghz_file_format.html",
+            "scope": "file-format",
+            "note": "RAW usa duraciones RAW_Data y no requiere identificar un protocolo conocido"
+          }
+        },
+        "receive": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/sub-ghz",
+            "scope": "family",
+            "note": "Read RAW registra duraciones sin decodificación garantizada"
+          }
+        }
+      },
+      "notes": [
+        "RAW es una representación de captura, no un algoritmo de acceso."
+      ]
+    },
+    "subghz-bin-raw": {
+      "features": [
+        "raw-signal",
+        "binraw-file"
+      ],
+      "capabilities": {
+        "parse_file": {
+          "status": "documented",
+          "evidence": {
+            "reference": "https://developer.flipper.net/flipperzero/doxygen/subghz_file_format.html",
+            "scope": "file-format",
+            "note": "BinRAW codifica secuencias repetidas de intervalos en ficheros .sub"
+          }
+        }
+      },
+      "notes": [
+        "La documentación menciona señales estáticas; no atribuir capacidades de códigos dinámicos."
+      ]
+    },
+    "uart": {
+      "features": [
+        "serial-interface",
+        "wired-digital"
+      ],
+      "capabilities": {
+        "operate_interface": {
+          "status": "limited",
+          "evidence": {
+            "reference": "https://docs.flipper.net/zero/gpio-and-modules",
+            "scope": "family",
+            "note": "UART necesita conexión y configuración correcta de los pines, tensión y periférico"
+          }
+        }
+      }
+    },
+    "spi": {
+      "features": [
+        "synchronous-bus",
+        "wired-digital"
+      ]
+    },
+    "i2c": {
+      "features": [
+        "synchronous-bus",
+        "wired-digital"
+      ]
+    },
+    "flipper-expansion-protocol": {
+      "features": [
+        "serial-interface",
+        "module-protocol"
+      ],
+      "capabilities": {
+        "operate_interface": {
+          "status": "documented",
+          "evidence": {
+            "reference": "https://developer.flipper.net/flipperzero/doxygen/expansion_protocol.html",
+            "scope": "protocol",
+            "note": "La documentación describe el protocolo para módulos de expansión"
+          }
+        }
+      }
+    },
+    "rpc-protobuf": {
+      "features": [
+        "rpc",
+        "protobuf-interface"
+      ],
+      "notes": [
+        "No confundir serialización RPC con un protocolo de radio."
+      ]
+    },
+    "bluetooth-le": {
+      "features": [
+        "ble",
+        "radio-2p4ghz"
+      ],
+      "notes": [
+        "El soporte de BLE no implica disponibilidad de cualquier perfil GATT arbitrario."
+      ]
+    },
+    "usb-cdc": {
+      "features": [
+        "usb-serial",
+        "wired-digital"
+      ]
+    },
+    "usb-hid": {
+      "features": [
+        "usb-human-interface",
+        "wired-digital"
+      ]
+    }
+  },
+  "relations": [
+    {
+      "source": "iso-14443-4a",
+      "target": "iso-14443-3a",
+      "type": "layered_over",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+        "scope": "protocol",
+        "note": "La representación 14443-4A contiene el encabezado y campos de 14443-3A"
+      }
+    },
+    {
+      "source": "mifare-classic",
+      "target": "iso-14443-3a",
+      "type": "layered_over",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+        "scope": "protocol",
+        "note": "MIFARE Classic incluye campos NFC-A 14443-3A en el formato oficial"
+      }
+    },
+    {
+      "source": "mifare-ultralight",
+      "target": "iso-14443-3a",
+      "type": "layered_over",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+        "scope": "protocol",
+        "note": "Ultralight conserva los campos NFC-A 14443-3A"
+      }
+    },
+    {
+      "source": "mifare-desfire",
+      "target": "iso-14443-4a",
+      "type": "layered_over",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+        "scope": "protocol",
+        "note": "El formato DESFire contiene campos ISO14443-4A y ATS"
+      }
+    },
+    {
+      "source": "ntag213",
+      "target": "mifare-ultralight",
+      "type": "related_to",
+      "evidence": {
+        "reference": "https://docs.flipper.net/zero/nfc/read",
+        "scope": "protocol",
+        "note": "La documentación describe MIFARE Ultralight y NTAG como etiquetas con páginas"
+      }
+    },
+    {
+      "source": "ntag215",
+      "target": "mifare-ultralight",
+      "type": "related_to",
+      "evidence": {
+        "reference": "https://docs.flipper.net/zero/nfc/read",
+        "scope": "protocol",
+        "note": "La documentación describe MIFARE Ultralight y NTAG como etiquetas con páginas"
+      }
+    },
+    {
+      "source": "ntag216",
+      "target": "mifare-ultralight",
+      "type": "related_to",
+      "evidence": {
+        "reference": "https://docs.flipper.net/zero/nfc/read",
+        "scope": "protocol",
+        "note": "La documentación describe MIFARE Ultralight y NTAG como etiquetas con páginas"
+      }
+    },
+    {
+      "source": "iso-15693",
+      "target": "iso-14443-3a",
+      "type": "contrasts_with",
+      "evidence": {
+        "reference": "https://docs.flipper.net/zero/nfc/read",
+        "scope": "protocol",
+        "note": "El manual distingue tarjetas NFC-V de tipo A; no son equivalentes"
+      }
+    },
+    {
+      "source": "nfc-felica",
+      "target": "iso-14443-3a",
+      "type": "contrasts_with",
+      "evidence": {
+        "reference": "https://docs.flipper.net/zero/nfc/read",
+        "scope": "protocol",
+        "note": "La documentación separa NFC tipo F de tipo A"
+      }
+    },
+    {
+      "source": "em4100-32",
+      "target": "em4100",
+      "type": "variant_of",
+      "evidence": {
+        "reference": "https://docs.flipper.net/zero/rfid/read",
+        "scope": "protocol",
+        "note": "El manual enumera las longitudes EM4100 como variantes nominales"
+      }
+    },
+    {
+      "source": "em4100-16",
+      "target": "em4100",
+      "type": "variant_of",
+      "evidence": {
+        "reference": "https://docs.flipper.net/zero/rfid/read",
+        "scope": "protocol",
+        "note": "El manual enumera las longitudes EM4100 como variantes nominales"
+      }
+    },
+    {
+      "source": "necext",
+      "target": "nec",
+      "type": "variant_of",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+        "scope": "protocol",
+        "note": "La nomenclatura del catálogo IR identifica una variante de formato de la misma familia"
+      }
+    },
+    {
+      "source": "nec42",
+      "target": "nec",
+      "type": "variant_of",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+        "scope": "protocol",
+        "note": "La nomenclatura del catálogo IR identifica una variante de formato de la misma familia"
+      }
+    },
+    {
+      "source": "nec42ext",
+      "target": "nec42",
+      "type": "variant_of",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+        "scope": "protocol",
+        "note": "La nomenclatura del catálogo IR identifica una variante de formato de la misma familia"
+      }
+    },
+    {
+      "source": "rc5x",
+      "target": "rc5",
+      "type": "variant_of",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+        "scope": "protocol",
+        "note": "La nomenclatura del catálogo IR identifica una variante de formato de la misma familia"
+      }
+    },
+    {
+      "source": "sirc15",
+      "target": "sirc",
+      "type": "variant_of",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+        "scope": "protocol",
+        "note": "La nomenclatura del catálogo IR identifica una variante de formato de la misma familia"
+      }
+    },
+    {
+      "source": "sirc20",
+      "target": "sirc",
+      "type": "variant_of",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+        "scope": "protocol",
+        "note": "La nomenclatura del catálogo IR identifica una variante de formato de la misma familia"
+      }
+    },
+    {
+      "source": "ds1990",
+      "target": "1-wire",
+      "type": "layered_over",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+        "scope": "protocol",
+        "note": "El protocolo de llaves Dallas emplea el bus 1-Wire para la ROM"
+      }
+    },
+    {
+      "source": "ds1992",
+      "target": "1-wire",
+      "type": "layered_over",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+        "scope": "protocol",
+        "note": "El protocolo de llaves Dallas emplea el bus 1-Wire para la ROM"
+      }
+    },
+    {
+      "source": "ds1996",
+      "target": "1-wire",
+      "type": "layered_over",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+        "scope": "protocol",
+        "note": "El protocolo de llaves Dallas emplea el bus 1-Wire para la ROM"
+      }
+    },
+    {
+      "source": "ds1971",
+      "target": "1-wire",
+      "type": "layered_over",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+        "scope": "protocol",
+        "note": "El protocolo de llaves Dallas emplea el bus 1-Wire para la ROM"
+      }
+    },
+    {
+      "source": "dsgeneric",
+      "target": "1-wire",
+      "type": "layered_over",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+        "scope": "protocol",
+        "note": "El protocolo de llaves Dallas emplea el bus 1-Wire para la ROM"
+      }
+    },
+    {
+      "source": "cyfral",
+      "target": "ds1990",
+      "type": "contrasts_with",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+        "scope": "protocol",
+        "note": "El formato diferencia Cyfral de los protocolos Dallas con ROM"
+      }
+    },
+    {
+      "source": "metakom",
+      "target": "ds1990",
+      "type": "contrasts_with",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+        "scope": "protocol",
+        "note": "El formato diferencia Metakom de los protocolos Dallas con ROM"
+      }
+    },
+    {
+      "source": "subghz-raw",
+      "target": "subghz-princeton",
+      "type": "contrasts_with",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/subghz_file_format.html",
+        "scope": "protocol",
+        "note": "RAW no decodifica un protocolo identificado, mientras Princeton es un ejemplo de key file"
+      }
+    },
+    {
+      "source": "subghz-bin-raw",
+      "target": "subghz-raw",
+      "type": "related_to",
+      "evidence": {
+        "reference": "https://developer.flipper.net/flipperzero/doxygen/subghz_file_format.html",
+        "scope": "protocol",
+        "note": "BinRAW y RAW representan datos sin decodificación por protocolo, con codificaciones distintas"
+      }
+    },
+    {
+      "source": "usb-cdc",
+      "target": "uart",
+      "type": "related_to",
+      "evidence": {
+        "reference": "https://docs.flipper.net/zero/development/hardware/tech-specs",
+        "scope": "protocol",
+        "note": "CDC puede transportar comunicaciones serie por USB, sin equivalencia eléctrica con pines UART"
+      }
+    }
+  ]
+}

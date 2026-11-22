@@ -45,6 +45,18 @@ jobs:
           flipper-rag eval --file benchmarks/protocols_offline.jsonl --mode lexical --top-k 6 --min-recall 0.85
           flipper-rag audit
 
+      - name: Validate v0.6 ontology and offline capability benchmark
+        env:
+          RAG_EMBED_PROVIDER: none
+          RAG_CHAT_PROVIDER: none
+          RAG_DB_PATH: ${{ runner.temp }}/flipper-ontology-ci.sqlite3
+        run: |
+          flipper-rag ontology validate
+          flipper-rag ontology eval --file benchmarks/ontology_v06.jsonl
+          flipper-rag ontology index
+          flipper-rag audit
+
+
   ann-native:
     runs-on: ubuntu-latest
     steps:
