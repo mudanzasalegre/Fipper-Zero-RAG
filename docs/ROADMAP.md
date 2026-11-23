@@ -72,3 +72,13 @@ Ver [documentación de la v0.7](FIRMWARE_GRAPH_V07.md). No se ha ejecutado un be
 - CLI `dev`, interfaz `/development`, API de consulta/validación y fuentes indexables en RAG.
 - Compilación local de pruebas con uFBT bajo `--execute`, reportes SHA-256 y workflow manual de compilación real.
 - Pendiente: compilar los ejemplos con la SDK oficial en GitHub Actions / PC y probar en un Flipper propio; la CI estándar no es prueba de dispositivo.
+
+## v0.9 — Protocol Lab (realizado)
+
+- Analizadores offline y acotados de Sub-GHz, NFC, LF RFID, IR, iButton, FAM, Proto y BadUSB estático opt-in.
+- Diagnósticos estructurales con fuente, gravedad y línea; informes JSON, Markdown y HTML.
+- CLI `lab` con análisis individual, lote, comparación y resumen redactado opcional para RAG.
+- API de texto local y panel web `/lab`, sin acceso a sistemas externos ni ejecución de archivos.
+- Pruebas automatizadas con entradas sintéticas y controles de privacidad. No realiza pruebas de hardware/firmware real.
+
+Ver [especificación de Protocol Lab](PROTOCOL_LAB_V09.md). El siguiente paso es ampliar la validación documental de formatos específicos de releases oficiales, sin inferir capacidades a partir de ejemplos.

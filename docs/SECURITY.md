@@ -17,3 +17,9 @@
 - No habilitar exposición de `ollama:11434` ni `uvicorn:8000` fuera de localhost sin controles adecuados.
 - Revisar dependencias con una herramienta de análisis de vulnerabilidades.
 - Mantener repositorios de terceros y sus licencias separados del software propio.
+
+## Protocol Lab v0.9 — separación de datos confidenciales
+
+Los archivos examinados pueden contener identificadores NFC/RFID/iButton, claves, señales o comandos privados. El laboratorio nunca exporta esos valores en sus informes por defecto; muestra solo formatos, contajes, códigos de error y campos públicos validados. No almacena el archivo en su base RAG. `--index-redacted` requiere petición explícita y genera únicamente una síntesis saneada, catalogada como fuente local no versionada.
+
+El endpoint local recibe el texto del navegador y lo procesa en memoria: evita exponer el servidor fuera de `127.0.0.1` sin autenticación y HTTPS. Los manifiestos FAM se procesan con AST, nunca se ejecutan, y los scripts BadUSB no se reproducen. Los límites de tamaño y archivos reducen riesgos pero no convierten una interfaz local sin autenticación en un servicio apto para Internet.

@@ -1,0 +1,5 @@
+App(
+    appid="protocol_lab_demo",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="demo_app",
+)

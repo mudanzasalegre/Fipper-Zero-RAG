@@ -1,0 +1,6 @@
+Filetype: Flipper NFC device
+Version: 4
+Device type: ISO14443-3A
+UID: 00 00 00 00
+ATQA: 00 44
+SAK: 00

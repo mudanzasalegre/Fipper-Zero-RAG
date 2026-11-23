@@ -346,3 +346,21 @@ uvicorn flipper_rag.api:app --host 127.0.0.1 --port 8000
 La compilación **solo** está disponible en CLI local con `--execute`. Puede descargar SDK y ejecutar código de build; usa únicamente proyectos de confianza. Nunca ejecuta `launch`, `flash_usb` ni controla hardware. La API web solo consulta y valida. Para compilar realmente los tres FAP de prueba en GitHub, activa manualmente **Actions → Development assistant - real FAP smoke build → Run workflow**. La suite CI ordinaria usa un ejecutable simulado para los tests del runner.
 
 [Especificación técnica v0.8](docs/DEVELOPMENT_ASSISTANT_V08.md) · [uFBT oficial](https://github.com/flipperdevices/flipperzero-ufbt) · [Desarrollo de apps](https://developer.flipper.net/flipperzero/doxygen/applications.html) · [JavaScript SDK](https://developer.flipper.net/flipperzero/doxygen/js_developing_apps_using_js_sdk.html)
+
+## v0.9 — Protocol Lab (23 noviembre 2026)
+
+Análisis **offline, de solo lectura**, de archivos Flipper Zero: `.sub` (Key/RAW/BinRAW), `.nfc`, `.rfid`, `.ir`, `.irtest`, `.ibtn`, `.fam`, `.proto` y auditoría opcional de BadUSB `.txt`. Comprueba cabeceras, versiones, formatos hexadecimales, campos obligatorios y parte de la estructura de señales; **no** controla Flipper, emula tarjetas, transmite RF, valida autenticación ni ejecuta manifiestos.
+
+Los diagnósticos se exportan a **JSON, Markdown o HTML** con datos sensibles redactados. El análisis de lote está acotado, omite enlaces simbólicos y no guarda claves, UIDs, payloads ni rutas originales. La opción `--index-redacted` permite indexar **solo una síntesis saneada** en el RAG; por defecto no indexa nada.
+
+```bash
+git pull origin main
+python -m pip install -e ".[dev]"
+flipper-rag lab formats
+flipper-rag lab analyze --file examples/protocol_lab/demo-ir.ir --report markdown
+flipper-rag lab batch --directory examples/protocol_lab --report json
+flipper-rag lab compare --before examples/protocol_lab/demo-ir.ir --after examples/protocol_lab/demo-ir.ir
+uvicorn flipper_rag.api:app --host 127.0.0.1 --port 8000
+```
+
+Interfaz: `http://127.0.0.1:8000/lab`. API local: `GET /api/lab/formats`, `POST /api/lab/analyze`, `POST /api/lab/report`. Consulta [especificación v0.9](docs/PROTOCOL_LAB_V09.md), [ejemplos sintéticos](examples/protocol_lab/README.md) y [guías indexables](knowledge/protocol_lab/). No afirmamos pruebas sobre un dispositivo real ni compatibilidad con una release específica.

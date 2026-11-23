@@ -1,0 +1,5 @@
+syntax = "proto3";
+package flipper.demo;
+message DummyMessage {
+  uint32 dummy_value = 1;
+}

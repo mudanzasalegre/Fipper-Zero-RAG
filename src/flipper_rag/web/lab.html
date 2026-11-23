@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Protocol Lab · Flipper Zero RAG</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b0f18;--panel:#141d2c;--line:#283348;--text:#f0f4fb;--muted:#a1b0c6;--accent:#ff8b3e;--good:#56c998;--bad:#f77979;--warn:#f5bd69}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 95% 0%,#22273a 0%,var(--bg) 49%);font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text)}
+    main{max-width:1100px;margin:0 auto;padding:38px 20px 80px}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+    .eyebrow{color:var(--accent);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:12px}.title{font-size:clamp(32px,6vw,50px);letter-spacing:-.04em;line-height:1.12;margin:10px 0 14px}
+    p{color:var(--muted)}.lead{max-width:700px;font-size:17px}.top{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .pill{border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:16px;margin-top:27px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:23px;min-width:0}
+    label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:15px 0 7px}input[type=file],select{display:block;width:100%;border:1px solid var(--line);border-radius:9px;background:#0b1524;color:var(--text);padding:13px}
+    button{border:0;border-radius:10px;padding:12px 16px;font-weight:700;background:var(--accent);color:#1c1108;cursor:pointer}button:disabled{opacity:.4;cursor:not-allowed}
+    .buttons{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px}.secondary{background:#28344a;color:var(--text)}.subtle{font-size:12px;color:var(--muted)}
+    .badge{padding:4px 9px;border-radius:8px;font-size:12px;font-weight:700;display:inline-block}.valid{background:#173b30;color:var(--good)}.invalid{background:#4b242b;color:var(--bad)}.warnings{background:#403322;color:var(--warn)}
+    .metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}.metric{background:#101826;padding:12px;border-radius:10px}.metric strong{display:block;font-size:24px}.metric span{font-size:11px;color:var(--muted)}
+    .finding{border-left:3px solid var(--warn);background:#111a28;padding:10px 13px;margin:9px 0;border-radius:4px}.finding.error{border-color:var(--bad)}.finding.info{border-color:var(--good)}.finding code{font-size:12px;color:var(--accent)}
+    dl{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;font-size:13px}dt{color:var(--muted)}dd{margin:0;overflow-wrap:anywhere}h2{margin-top:0;font-size:20px}h3{font-size:16px}
+    @media(max-width:750px){.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.panel{padding:17px}}
+  </style>
+</head>
+<body><main>
+  <div class="top"><a href="/">← Volver al RAG</a><span class="pill">v0.9 · 100 % offline en tu servidor local</span></div>
+  <div style="margin-top:35px"><span class="eyebrow">Protocol Lab</span><h1 class="title">Analiza archivos. <br>Entiende sus formatos.</h1>
+    <p class="lead">Diagnóstico documental de archivos Flipper Zero, sin ejecutar scripts, emular tarjetas ni transmitir señales. Los informes ocultan identificadores, claves y datos de capturas.</p></div>
+  <div class="grid">
+    <section class="panel">
+      <h2>Nuevo análisis</h2><p>El contenido se envía únicamente a esta instancia local de FastAPI. No se almacena de forma automática.</p>
+      <label for="file">Archivo de texto</label><input id="file" type="file" accept=".sub,.nfc,.rfid,.ir,.irtest,.ibtn,.fam,.proto,.txt">
+      <label for="type">Formato</label><select id="type"><option value="">Detección por extensión</option><option value="sub">Sub-GHz .sub</option><option value="nfc">NFC .nfc</option><option value="rfid">LF RFID .rfid</option><option value="ir">Infrarrojos .ir</option><option value="irtest">Pruebas IR .irtest</option><option value="ibtn">iButton .ibtn</option><option value="fam">Manifest .fam</option><option value="proto">Protobuf .proto</option><option value="badusb">BadUSB .txt (solo análisis estático)</option></select>
+      <div class="buttons"><button id="analyze" disabled>Analizar archivo</button><button id="download" class="secondary" disabled>Descargar informe</button></div>
+      <label for="report">Tipo de informe</label><select id="report"><option value="markdown">Markdown (.md)</option><option value="json">JSON estructurado (.json)</option><option value="html">HTML offline (.html)</option></select>
+      <p class="subtle">Límite: 2 MB por archivo. Los formatos binarios y las capturas de datos no se interpretan ni se exportan.</p>
+    </section>
+    <section class="panel" aria-live="polite">
+      <h2>Resultado</h2><div id="status" class="subtle">Selecciona un archivo para empezar.</div>
+      <div id="summary" hidden><div id="metrics" class="metrics"></div><h3>Metadatos permitidos</h3><dl id="metadata"></dl><h3>Diagnósticos</h3><div id="findings"></div>
+      <p class="subtle">Los diagnósticos comparan la estructura con documentos oficiales; no acreditan compatibilidad de firmware ni validan información criptográfica.</p></div>
+    </section>
+  </div>
+  <p class="subtle">Referencias documentales: <a href="https://developer.flipper.net/flipperzero/doxygen/file_formats.html" rel="noreferrer" target="_blank">Flipper File Formats</a> y <a href="https://developer.flipper.net/flipperzero/doxygen/app_manifests.html" target="_blank" rel="noreferrer">FAM</a>. Un estado «válido» significa solo que no se detectaron errores estructurales según estas reglas.</p>
+</main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const file=$('file'),type=$('type'),run=$('analyze'),down=$('download');
+  let last = null;
+  file.addEventListener('change',()=>{run.disabled=!file.files.length;down.disabled=true;last=null;$('summary').hidden=true;$('status').textContent='Listo para inspeccionar, sin transmisión ni ejecución de señales.'});
+  async function request(endpoint,body){
+    const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!res.ok)throw new Error('El archivo supera los límites o no coincide con un formato permitido.');
+    return res.json();
+  }
+  function addMetric(label,value){const cell=document.createElement('div');cell.className='metric';const title=document.createElement('strong');title.textContent=String(value);const caption=document.createElement('span');caption.textContent=label;cell.append(title,caption);$('metrics').appendChild(cell)}
+  function show(r){
+    $('summary').hidden=false;$('metrics').replaceChildren();$('metadata').replaceChildren();$('findings').replaceChildren();
+    const b=document.createElement('span');b.className='badge '+r.status;b.textContent=({'valid':'Sin errores','warnings':'Revisar advertencias','invalid':'Errores estructurales'})[r.status]||r.status;
+    $('status').replaceChildren(b);addMetric('Líneas',r.line_count);addMetric('Errores',r.finding_totals.errors);addMetric('Avisos',r.finding_totals.warnings);
+    for (const [key,value] of Object.entries(r.metadata||{})){const dt=document.createElement('dt');dt.textContent=key;const dd=document.createElement('dd');dd.textContent=String(value);$('metadata').append(dt,dd)}
+    if(!r.findings.length){const el=document.createElement('p');el.textContent='Sin incidencias estructurales conocidas.';$('findings').appendChild(el)}
+    for (const f of r.findings){const row=document.createElement('div');row.className='finding '+f.severity;const title=document.createElement('code');title.textContent=f.code;const msg=document.createElement('div');msg.textContent=f.message+(f.line?' (línea '+f.line+')':'');row.append(title,msg);$('findings').appendChild(row)}
+  }
+  run.addEventListener('click',async()=>{
+    if(!file.files.length)return;const f=file.files[0];if(f.size>2e6){$('status').textContent='Archivo demasiado grande (máximo 2 MB).';return}
+    run.disabled=true;$('status').textContent='Analizando localmente…';
+    try{const body={filename:f.name,content:await f.text(),file_format:type.value||null};const r=await request('/api/lab/analyze',body);last=body;show(r);down.disabled=false}
+    catch(e){$('status').textContent=e.message;$('summary').hidden=true}
+    finally{run.disabled=false}
+  });
+  down.addEventListener('click',async()=>{
+    if(!last)return;down.disabled=true;
+    try{const fmt=$('report').value;const r=await request('/api/lab/report',{...last,output:fmt});const ext={markdown:'md',json:'json',html:'html'}[fmt];const blob=new Blob([r.report],{type:r.mime_type+';charset=utf-8'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download='protocol-lab-reporte.'+ext;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u)}catch(e){$('status').textContent=e.message}finally{down.disabled=false}
+  });
+})();
+</script></body></html>

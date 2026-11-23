@@ -22,6 +22,17 @@ jobs:
         run: python -m compileall -q src
       - name: Test suite
         run: python -m pytest -q
+      - name: Protocol Lab v0.9 offline smoke (synthetic files only)
+        env:
+          RAG_EMBED_PROVIDER: none
+          RAG_CHAT_PROVIDER: none
+          RAG_DB_PATH: ${{ runner.temp }}/flipper-lab-ci.sqlite3
+        run: |
+          flipper-rag lab formats
+          flipper-rag lab analyze --file examples/protocol_lab/demo-ir.ir
+          flipper-rag lab analyze --file examples/protocol_lab/demo-nfc.nfc
+          flipper-rag lab batch --directory examples/protocol_lab
+          flipper-rag lab compare --before examples/protocol_lab/demo-ir.ir --after examples/protocol_lab/demo-ir.ir
       - name: Validate source catalog
         run: flipper-rag sources --catalog-file sources.json
       - name: Offline retrieval benchmark (no LLM, no network)
