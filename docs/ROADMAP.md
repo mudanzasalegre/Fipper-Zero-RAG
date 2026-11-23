@@ -82,3 +82,12 @@ Ver [documentación de la v0.7](FIRMWARE_GRAPH_V07.md). No se ha ejecutado un be
 - Pruebas automatizadas con entradas sintéticas y controles de privacidad. No realiza pruebas de hardware/firmware real.
 
 Ver [especificación de Protocol Lab](PROTOCOL_LAB_V09.md). El siguiente paso es ampliar la validación documental de formatos específicos de releases oficiales, sin inferir capacidades a partir de ejemplos.
+
+## v1.0 — Flipper Knowledge Platform (2026-11-23)
+
+- Panel `/platform`, búsqueda federada RAG/ontología/firmware/desarrollo/laboratorio y estado de fuentes.
+- Indexación incremental de documentación oficial con HTTP ETag/Last-Modified (304) y SHA-256; metadatos Git sin re-embeddings cuando el texto es idéntico.
+- Banco de 13 URLs oficiales y 22 preguntas con juicios graduados, Recall@K, MRR, nDCG@K, abstención y cobertura de citas; resultados reales solo tras descargar fuentes.
+- CLI y workflow manual, programado y en push relevante para evaluar fuentes reales; sin controles de hardware.
+
+Ver [diseño v1.0](KNOWLEDGE_PLATFORM_V10.md). Las métricas no equivalen a validar comportamiento físico ni veracidad generativa.

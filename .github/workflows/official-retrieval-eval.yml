@@ -1,0 +1,61 @@
+name: Official documentation retrieval benchmark
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/flipper_rag/platform*.py'
+      - 'src/flipper_rag/sources.py'
+      - 'src/flipper_rag/retrieval.py'
+      - 'benchmarks/real_official_v1.json'
+      - '.github/workflows/official-retrieval-eval.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '20 4 * * 1'
+permissions:
+  contents: read
+jobs:
+  official-retrieval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      RAG_EMBED_PROVIDER: none
+      RAG_CHAT_PROVIDER: none
+      RAG_DB_PATH: ${{ runner.temp }}/flipper-official-eval.sqlite3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -e '.[dev]'
+      - name: Fetch actual official pages and evaluate retrieval
+        id: real_eval
+        continue-on-error: true
+        run: |
+          mkdir -p evaluation-artifacts
+          flipper-rag platform evaluate --file benchmarks/real_official_v1.json \
+            --fetch --delay 0.6 --min-coverage 1.0 --mode lexical \
+            --json-output evaluation-artifacts/retrieval.json
+      - name: Export integrity and source freshness
+        if: always()
+        run: |
+          mkdir -p evaluation-artifacts
+          flipper-rag platform report --format json --output evaluation-artifacts/platform-status.json
+          flipper-rag platform audit > evaluation-artifacts/platform-audit.json
+      - name: Publish explicit execution result
+        if: always()
+        env:
+          EVAL_OUTCOME: ${{ steps.real_eval.outcome }}
+        run: |
+          echo '### v1.0 evaluation on live official documentation' >> "$GITHUB_STEP_SUMMARY"
+          echo "Execution outcome: **$EVAL_OUTCOME**" >> "$GITHUB_STEP_SUMMARY"
+          echo 'See retrieval.json for corpus coverage, ranked citations, MRR and nDCG.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Network failures or robots restrictions mean evaluation is incomplete, not a passing score.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload inspectable reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flipper-official-retrieval-${{ github.run_id }}
+          path: evaluation-artifacts/
+          if-no-files-found: warn
+          retention-days: 30

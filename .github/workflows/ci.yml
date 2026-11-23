@@ -68,6 +68,16 @@ jobs:
           flipper-rag audit
 
 
+      - name: v1.0 integrated knowledge health (offline)
+        env:
+          RAG_EMBED_PROVIDER: none
+          RAG_CHAT_PROVIDER: none
+          RAG_DB_PATH: ${{ runner.temp }}/flipper-platform-ci.sqlite3
+        run: |
+          flipper-rag platform sync --local --internal
+          flipper-rag platform audit
+          flipper-rag platform status
+
   ann-native:
     runs-on: ubuntu-latest
     steps:

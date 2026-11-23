@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "description": "Hand-curated judgments for live Flipper Devices documentation; URLs, not third-party page text, are stored. Results depend on fetch date and installed model.",
+  "sources": [
+    "https://developer.flipper.net/flipperzero/doxygen/index.html",
+    "https://developer.flipper.net/flipperzero/doxygen/applications.html",
+    "https://developer.flipper.net/flipperzero/doxygen/apps_on_sd_card.html",
+    "https://developer.flipper.net/flipperzero/doxygen/fbt.html",
+    "https://developer.flipper.net/flipperzero/doxygen/js_developing_apps_using_js_sdk.html",
+    "https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html",
+    "https://developer.flipper.net/flipperzero/doxygen/subghz_file_format.html",
+    "https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html",
+    "https://developer.flipper.net/flipperzero/doxygen/lfrfid_file_format.html",
+    "https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html",
+    "https://docs.flipper.net/zero/development/hardware/tech-specs",
+    "https://docs.flipper.net/zero/basics/firmware-update",
+    "https://docs.flipper.net/zero/sub-ghz/frequencies"
+  ],
+  "cases": [
+    {"id":"fap-api-symbols","question":"Which api_symbols.csv entries are exported to external FAP applications?","relevance":{"https://developer.flipper.net/flipperzero/doxygen/apps_on_sd_card.html":3}},
+    {"id":"fap-version","question":"How does FAP API major minor version compatibility work?","relevance":{"https://developer.flipper.net/flipperzero/doxygen/apps_on_sd_card.html":3}},
+    {"id":"fap-manifest","question":"How to configure application.fam apptype FlipperAppType.EXTERNAL?","relevance":{"https://developer.flipper.net/flipperzero/doxygen/apps_on_sd_card.html":3,"https://developer.flipper.net/flipperzero/doxygen/applications.html":1}},
+    {"id":"fbt-firmware-build","question":"What is fw_dist and fap_dist in Flipper Build Tool targets?","relevance":{"https://developer.flipper.net/flipperzero/doxygen/fbt.html":3}},
+    {"id":"custom-apps","question":"Where are external C C++ Flipper apps developed and published?","relevance":{"https://developer.flipper.net/flipperzero/doxygen/applications.html":3}},
+    {"id":"js-sdk-npx","question":"How to use npx create-fz-app and the Flipper JavaScript SDK?","relevance":{"https://developer.flipper.net/flipperzero/doxygen/js_developing_apps_using_js_sdk.html":3}},
+    {"id":"nfc-iso14443","question":"In the NFC file format what fields represent ISO14443-3A ATQA and SAK?","relevance":{"https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html":3}},
+    {"id":"nfc-iso144434","question":"How is the ATS field stored for ISO14443-4A in .nfc?","relevance":{"https://developer.flipper.net/flipperzero/doxygen/nfc_file_format.html":3}},
+    {"id":"sub-file-header","question":"What are the Filetype Version Frequency fields of the SubGhz Key File?","relevance":{"https://developer.flipper.net/flipperzero/doxygen/subghz_file_format.html":3}},
+    {"id":"sub-presets","question":"Which CC1101 FuriHalSubGhzPresetCustom fields configure the custom preset?","relevance":{"https://developer.flipper.net/flipperzero/doxygen/subghz_file_format.html":3}},
+    {"id":"ir-raw","question":"What is the raw infrared duty_cycle frequency and timing data format?","relevance":{"https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html":3}},
+    {"id":"ir-parsed","question":"Which infrared protocols include NECext Samsung32 RC6 RC5 and SIRC?","relevance":{"https://developer.flipper.net/flipperzero/doxygen/infrared_file_format.html":3}},
+    {"id":"rfid-types","question":"How does the RFID key file specify Key type and hex Data for EM4100?","relevance":{"https://developer.flipper.net/flipperzero/doxygen/lfrfid_file_format.html":3}},
+    {"id":"ibutton-rom","question":"How do iButton DS1992 files store Rom Data and Sram Data?","relevance":{"https://developer.flipper.net/flipperzero/doxygen/ibutton_file_format.html":3}},
+    {"id":"hardware-cc1101","question":"Which sub 1 GHz transceiver CC1101 and NFC ST25R3916 hardware are used?","relevance":{"https://docs.flipper.net/zero/development/hardware/tech-specs":3}},
+    {"id":"hardware-gpio","question":"What is the GPIO voltage 3.3 V level and the number of pins on Flipper?","relevance":{"https://docs.flipper.net/zero/development/hardware/tech-specs":3}},
+    {"id":"firmware-channels","question":"What are the dev, release candidate rc and release firmware update channels?","relevance":{"https://docs.flipper.net/zero/basics/firmware-update":3}},
+    {"id":"firmware-qflipper","question":"How to update firmware using qFlipper or the mobile app?","relevance":{"https://docs.flipper.net/zero/basics/firmware-update":3}},
+    {"id":"regional-bands","question":"Which 433 MHz and 868 MHz transmission bands are allowed in the EU region?","relevance":{"https://docs.flipper.net/zero/sub-ghz/frequencies":3}},
+    {"id":"region-block","question":"Why is Sub-GHz transmission blocked outside the regional allowed frequency bands?","relevance":{"https://docs.flipper.net/zero/sub-ghz/frequencies":3}},
+    {"id":"no-evidence-stock-exchange","question":"What is the quarterly profit of the Tokyo Stock Exchange for an apartment in Berlin?","should_abstain":true},
+    {"id":"no-evidence-recipes","question":"What is the history of traditional Basque cheesecake with specific baking instructions?","should_abstain":true}
+  ]
+}

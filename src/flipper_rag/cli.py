@@ -12,6 +12,7 @@ from .protocol_intelligence import add_parser as add_ontology_parser, cli_result
 from .firmware_cli import add_parser as add_firmware_parser, run as run_firmware_cli
 from .development_cli import add_parser as add_development_parser, run as run_development_cli
 from .lab_cli import add_parser as add_lab_parser, run as run_lab_cli
+from .platform_cli import add_parser as add_platform_parser, run as run_platform_cli
 from .service import RAGService
 from .protocols import all_protocols, get_protocol, search_protocols, protocol_documents, SOURCE_ID
 
@@ -101,13 +102,21 @@ def main(argv: list[str] | None = None):
     add_firmware_parser(sub)
     add_development_parser(sub)
     add_lab_parser(sub)
+    add_platform_parser(sub)
     args = p.parse_args(argv)
     settings = Settings()
     store = Store(settings.db_path)
     embedder = Embedder(settings)
     retriever = Retriever(store, embedder)
 
-    if args.command == "lab":
+    if args.command == "platform":
+        try:
+            result = run_platform_cli(args, store, embedder, retriever)
+        except ValueError as exc:
+            p.error(str(exc))
+        if result:
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+    elif args.command == "lab":
         code = run_lab_cli(args, store, embedder)
         if code:
             raise SystemExit(code)

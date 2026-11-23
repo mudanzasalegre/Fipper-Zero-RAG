@@ -1,5 +1,16 @@
 # ◈ Flipper Zero RAG
 
+**v1.0 — Flipper Knowledge Platform (2026-11-23):** panel unificado [Panel /platform](docs/KNOWLEDGE_PLATFORM_V10.md), búsqueda federada, benchmark de 13 fuentes oficiales y 22 casos, informes reproducibles con Recall/MRR/nDCG, sincronización incremental ETag/304 y Git sin recalcular embeddings para ficheros idénticos. **No se anuncian métricas reales hasta descargar las fuentes y ejecutar el benchmark.** Ver [documentación v1.0](docs/KNOWLEDGE_PLATFORM_V10.md).
+
+```bash
+flipper-rag platform sync --local --internal
+flipper-rag platform sync --web --max-pages 100 --delay 0.5
+flipper-rag platform evaluate --file benchmarks/real_official_v1.json --fetch --json-output data/eval-v1.json
+flipper-rag platform audit
+uvicorn flipper_rag.api:app --host 127.0.0.1 --port 8000
+```
+
+
 **Asistente técnico local para Flipper Zero, respaldado por documentos oficiales y código fuente con trazabilidad.**
 
 [Manual oficial](https://docs.flipper.net/zero) · [Documentación de desarrollo](https://developer.flipper.net/flipperzero/doxygen/) · [Firmware](https://github.com/flipperdevices/flipperzero-firmware) · [Apps Catalog](https://github.com/flipperdevices/flipper-application-catalog)
