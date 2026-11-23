@@ -20,7 +20,7 @@ jobs:
     env:
       RAG_EMBED_PROVIDER: none
       RAG_CHAT_PROVIDER: none
-      RAG_DB_PATH: ${{ runner.temp }}/flipper-official-eval.sqlite3
+      RAG_DB_PATH: ./data/flipper-official-eval.sqlite3
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
